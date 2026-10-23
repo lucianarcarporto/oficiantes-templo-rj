@@ -46,10 +46,10 @@
 .freq-legenda{display:flex;flex-wrap:wrap;gap:9px;margin:10px 0;align-items:center;font-size:.82rem}
 .freq-legenda span{display:inline-flex;align-items:center;gap:5px}
 .freq-legenda i{display:inline-block;width:15px;height:15px;border:1px solid #c5cbd1;border-radius:3px}
-</style></head><body><header><h1>Oficiantes — Templo RJ</h1><p>Organização dos sábados • versão 9.9 • VES → PSI → OFI → VÉU e sincronização automática Supabase</p></header><main><nav id="nav"><button data-tab="inicio">Início</button><button data-tab="pessoas">Oficiantes</button><button data-tab="escala">Cronograma</button><button data-tab="presenca">Presenças</button><button data-tab="config">Configurações</button><button data-tab="atividades">Atividades</button><button data-tab="dados">Backup</button></nav>
+</style></head><body><header><h1>Oficiantes — Templo RJ</h1><p>Organização dos sábados • versão 9.9.22 experimental • VES → PSI → OFI → VÉU e sincronização automática Supabase</p></header><main><nav id="nav"><button data-tab="inicio">Início</button><button data-tab="pessoas">Oficiantes</button><button data-tab="escala">Cronograma</button><button data-tab="presenca">Presenças</button><button data-tab="config">Configurações</button><button data-tab="atividades">Atividades</button><button data-tab="dados">Backup</button></nav>
 <section id="inicio" class="active"><div class="card"><h2>Painel</h2><div id="resumo"></div><div id="aniversarios"></div></div><div class="card"><h3>Como começar</h3><p>1. Cadastre as oficiantes. 2. Ajuste períodos especiais em Configurações. 3. Selecione o sábado em Cronograma e crie a escala. 4. Confira presenças após o turno.</p><p class="muted">Os dados são salvos apenas neste navegador/dispositivo. Faça backups frequentes; a sincronização automática funciona quando os aparelhos estão conectados à internet e autenticados; não envia notificações em segundo plano.</p></div></section>
-<section id="pessoas"><div class="card"><h2>Cadastro de oficiantes</h2><form id="formPessoa"><input type="hidden" id="pId"><div class="grid"><div><label>Nome</label><input id="pNome" required></div><div><label>Aniversário (dia e mês)</label><input id="pAniv" type="text" placeholder="DD/MM" pattern="(0[1-9]|[12][0-9]|3[01])/(0[1-9]|1[0-2])"></div><div><label>Frequência</label><select id="pFreq"><option value="todas">Todos os sábados</option><option value="A">1º e 3º sábados (A)</option><option value="B">2º e 4º sábados (B)</option><option value="mensal_fixo">Uma vez/mês — sábado fixo</option><option value="mensal_variavel">Uma vez/mês — sábado variável</option><option value="enquete">Sem sábado fixo — enquete</option></select></div><div><label>Sábado mensal fixo</label><select id="pSab"><option value="1">1º</option><option value="2">2º</option><option value="3">3º</option><option value="4">4º</option><option value="5">5º</option></select></div></div><div class="grid"><div><label>Função fixa principal</label><select id="pFixa"><option value="">Sem função fixa</option></select></div><div><label>Sábados em que exerce a função fixa</label><div class="skills" id="pFixaSabados"><label><input type="checkbox" value="1"> 1º sábado</label><label><input type="checkbox" value="2"> 2º sábado</label><label><input type="checkbox" value="3"> 3º sábado</label><label><input type="checkbox" value="4"> 4º sábado</label><label><input type="checkbox" value="5"> 5º sábado</label></div><p class="muted">A frequência de participação continua independente da função fixa.</p></div><div><label>Regra da função fixa</label><p class="muted">A função fixa permanece durante todo o turno. O preenchimento automático não a desloca. Você poderá autorizar coberturas pontuais manualmente, sem perder a titularidade.</p></div></div><label>Aptidão para tarefas (marque todas as que sabe realizar)</label><div class="actions" style="margin:6px 0 10px"><button type="button" class="secondary" onclick="marcarTodasHabilidades(true)">✓ Marcar todas</button><button type="button" class="secondary" onclick="marcarTodasHabilidades(false)">Desmarcar todas</button><span id="contagemHabilidades" class="muted" aria-live="polite"></span></div><div class="skills" id="habilitacoes"></div><label for="pVeuStatus">VÉU — situação da oficiante</label><select id="pVeuStatus"><option value="nao_apta">Não apta</option><option value="apta">Apta — 1º, 2º, 3º e 4º VÉU</option><option value="treinamento">Em treinamento — somente 2º e 4º VÉU</option></select><p class="muted">A condição de treinamento é exclusiva do VÉU. Não exige acompanhante. Para cadastros antigos, quem já tinha VÉU marcado continua apta.</p><label>Observações e restrições individuais</label><textarea id="pObs" rows="2" placeholder="Ex.: não pode ficar em pé por muito tempo"></textarea><div class="actions"><button>Salvar oficiante</button><button type="button" class="secondary" onclick="resetPessoa()">Limpar</button></div></form></div><div class="card"><h3>Oficiantes cadastradas</h3><div class="scroll" id="listaPessoas"></div></div></section>
-<section id="escala"><div class="card"><h2>Cronograma de sábado</h2><div class="grid"><div><label>Data (sábado)</label><input type="date" id="dataEscala"></div><div><label>5º sábado (quando aplicável)</label><select id="quinto"><option value="voluntario">Voluntário</option><option value="A">Responsabilidade grupo A</option><option value="B">Responsabilidade grupo B</option></select></div></div><div class="actions"><button onclick="gerarEscala()">Criar / atualizar estrutura</button><button class="danger" id="excluirEscalaBtn" type="button" onclick="excluirCronogramaSelecionado()" disabled>Excluir cronograma selecionado</button><button class="secondary" onclick="gerarPDFCronograma()">Gerar PDF do Cronograma</button></div><p class="muted">Ao clicar em Gerar PDF, o sistema aplica horários, distribui PSI → OFI e preenche vagas por prioridade. IN: normalmente 1 hora; evita períodos consecutivos e permite até 2 horas seguidas apenas se não houver alternativa.</p><div id="avisoEscala"></div></div><div class="card" id="fixasVoluntariasCard" style="display:none"><h3>Funções fixas — 5º sábado voluntário</h3><p class="muted">Escolha uma titular por função para este sábado. Somente as oficiantes que responderam SIM aparecem nas opções. A titular não escolhida fica disponível para outras tarefas. A escolha não altera os grupos A e B.</p><div id="fixasVoluntariasLista"></div></div><div class="card"><h3>REC — grupo e substituições deste sábado</h3><div id="recEscala"></div></div><div class="card"><h3>Disponibilidade e enquete</h3><p class="muted">Horário padrão de todas: 07:00–12:30. Altere somente as exceções. A resposta SIM inclui automaticamente a oficiante na escala. A presença efetiva é registrada separadamente.</p><div id="contadorEnquete" aria-live="polite"></div><div id="participantes" class="scroll"></div></div><div class="card"><h3>VES → PSI → OFI → VÉU — escolha manual por período</h3><p class="muted">Escolha até quatro oficiantes diferentes. A escolha é protegida na distribuição automática. Outras tarefas automáticas conflitantes serão liberadas; tarefas manuais conflitantes exigem sua confirmação.</p><div id="psiManualLista"></div></div><div class="card"><h3>VES automática — NN e PSI → OFI</h3><p class="muted">A VES começa na hora cheia ou meia hora imediatamente anterior e termina exatamente no início da NN ou PSI. Não é necessário definir duração. A mesma oficiante realizará as tarefas vinculadas.</p></div><div class="card"><h3>NN — períodos deste sábado</h3><p class="muted">Para escolher entre oficiantes diferentes ou a mesma oficiante, acesse Configurações → NN, junto aos horários padrão.</p><div id="nnManualLista"></div><div id="listaNN"></div></div><div class="card"><h3>Lanche, ASV, LAV, ROB2 e EST — preenchimento automático</h3><p class="muted">Ao clicar em “Aplicar horários, distribuir tarefas e gerar PDF”, o sistema primeiro cobre as tarefas essenciais. Oferece lanche de 30 minutos, tenta ASV primeiro, usa LAV e ROB2 e completa lacunas com EST. Não altera escolhas manuais. Mais de uma oficiante pode estar em LAV ou no lanche ao mesmo tempo. Nenhum reforço é obrigatório e todas as designações podem ser alteradas manualmente.</p></div><div class="card"><h3>Tarefas comuns</h3><p class="muted">Escolha durações de 30 minutos até 5 horas. A duração padrão é uma preferência; você pode ajustá-la neste sábado.</p><div class="grid"><div><label>Tarefa</label><select id="comumTipo"></select></div><div><label>Início</label><input type="time" id="comumInicio" value="08:00" step="1800"></div><div><label>Duração (ajustável neste sábado)</label><select id="comumDur"><option value="30">30 minutos</option><option value="60">1 hora</option><option value="90">1h30</option><option value="120">2 horas</option><option value="150">2h30</option><option value="180">3 horas</option><option value="210">3h30</option><option value="240">4 horas</option><option value="270">4h30</option><option value="300">5 horas</option></select></div><div><label>Quantidade de oficiantes</label><input id="comumQtd" type="number" min="1" max="10" value="1"></div></div><div class="actions"><button onclick="adicionarComum()">Adicionar período</button></div><div class="grid"><div><label for="filtroComuns">Consultar tarefas e quantidades cadastradas</label><select id="filtroComuns" onchange="filtrarComuns()"><option value="">— Selecione uma tarefa para consultar —</option></select></div></div><div id="listaComuns"></div></div><div class="card"><h3>Editar escala visualmente</h3><p class="muted">Clique na célula para escolher inclusive tarefas já ocupadas e transferi-las para outra oficiante. O sistema avisa sobre substituições e conflitos. As linhas seguem a ordem do PDF; alterações manuais são protegidas.</p><div id="gradeVisual" class="scroll"></div><div id="editorVisual" class="notice" style="display:none;margin-top:12px"></div></div><div id="designacoes" style="display:none" aria-hidden="true"></div></section>
+<section id="pessoas"><div class="card"><h2>Cadastro de oficiantes</h2><form id="formPessoa"><input type="hidden" id="pId"><div class="grid"><div><label>Nome</label><input id="pNome" required></div><div><label>Aniversário (dia e mês)</label><input id="pAniv" type="text" placeholder="DD/MM" pattern="(0[1-9]|[12][0-9]|3[01])/(0[1-9]|1[0-2])"></div><div><label>Frequência</label><select id="pFreq"><option value="todas">Todos os sábados</option><option value="A">1º e 3º sábados (A)</option><option value="B">2º e 4º sábados (B)</option><option value="mensal_fixo">Uma vez/mês — sábado fixo</option><option value="mensal_variavel">Uma vez/mês — sábado variável</option><option value="enquete">Sem sábado fixo — enquete</option></select></div><div><label>Sábado mensal fixo</label><select id="pSab"><option value="1">1º</option><option value="2">2º</option><option value="3">3º</option><option value="4">4º</option><option value="5">5º</option></select></div></div><div class="grid"><div><label>Função fixa principal</label><select id="pFixa"><option value="">Sem função fixa</option></select></div><div><label>Sábados em que exerce a função fixa</label><div class="skills" id="pFixaSabados"><label><input type="checkbox" value="1"> 1º sábado</label><label><input type="checkbox" value="2"> 2º sábado</label><label><input type="checkbox" value="3"> 3º sábado</label><label><input type="checkbox" value="4"> 4º sábado</label><label><input type="checkbox" value="5"> 5º sábado</label></div><p class="muted">A frequência de participação continua independente da função fixa.</p></div><div><label>Regra da função fixa</label><p class="muted">A função fixa permanece durante todo o turno. O preenchimento automático não a desloca. Você poderá autorizar coberturas pontuais manualmente, sem perder a titularidade.</p></div></div><label>Aptidão para tarefas (marque todas as que sabe realizar)</label><div class="actions" style="margin:6px 0 10px"><button type="button" class="secondary" onclick="marcarTodasHabilidades(true)">✓ Marcar todas</button><button type="button" class="secondary" onclick="marcarTodasHabilidades(false)">Desmarcar todas</button><span id="contagemHabilidades" class="muted" aria-live="polite"></span></div><div class="skills" id="habilitacoes"></div><label for="pVeuStatus">VÉU — situação da oficiante</label><select id="pVeuStatus"><option value="nao_apta">Não apta</option><option value="apta">Apta — 1º, 2º, 3º e 4º VÉU</option><option value="treinamento">Em treinamento — somente 2º e 4º VÉU</option></select><p class="muted">A condição de treinamento é exclusiva do VÉU. Não exige acompanhante. Para cadastros antigos, quem já tinha VÉU marcado continua apta.</p><label for="pMaxIN">Máximo de IN por turno</label><select id="pMaxIN"><option value="2">2 IN — padrão</option><option value="1">1 IN — limitação física</option><option value="0">0 IN — não designar IN</option></select><p class="muted">Limite individual obrigatório para distribuição automática. Cadastros antigos mantêm 2 IN como padrão.</p><label>Observações e restrições individuais</label><textarea id="pObs" rows="2" placeholder="Ex.: não pode ficar em pé por muito tempo"></textarea><div class="actions"><button>Salvar oficiante</button><button type="button" class="secondary" onclick="resetPessoa()">Limpar</button></div></form></div><div class="card"><h3>Oficiantes cadastradas</h3><div class="scroll" id="listaPessoas"></div></div></section>
+<section id="escala"><div class="card"><h2>Cronograma de sábado</h2><div class="grid"><div><label>Data (sábado)</label><input type="date" id="dataEscala"></div><div><label>5º sábado (quando aplicável)</label><select id="quinto"><option value="voluntario">Voluntário</option><option value="A">Responsabilidade grupo A</option><option value="B">Responsabilidade grupo B</option></select></div></div><div class="actions"><button onclick="gerarEscala()">Criar / atualizar estrutura</button><button class="danger" id="excluirEscalaBtn" type="button" onclick="excluirCronogramaSelecionado()" disabled>Excluir cronograma selecionado</button><button class="secondary" onclick="gerarPDFCronograma()">Gerar PDF do Cronograma</button></div><p class="muted">Ao clicar em Gerar PDF, o sistema aplica horários, distribui PSI → OFI e preenche vagas por prioridade. IN: normalmente 1 hora; evita períodos consecutivos e permite até 2 horas seguidas apenas se não houver alternativa.</p><div id="avisoEscala"></div></div><div class="card" id="fixasVoluntariasCard" style="display:none"><h3>Funções fixas — 5º sábado voluntário</h3><p class="muted">Escolha uma titular por função para este sábado. Somente as oficiantes que responderam SIM aparecem nas opções. A titular não escolhida fica disponível para outras tarefas. A escolha não altera os grupos A e B.</p><div id="fixasVoluntariasLista"></div></div><div class="card"><h3>REC — grupo e substituições deste sábado</h3><div id="recEscala"></div></div><div class="card"><h3>Disponibilidade e enquete</h3><p class="muted">Horário padrão de todas: 07:00–12:30. Altere somente as exceções. A resposta SIM inclui automaticamente a oficiante na escala. A presença efetiva é registrada separadamente.</p><div id="contadorEnquete" aria-live="polite"></div><div id="participantes" class="scroll"></div></div><div class="card"><h3>VES → PSI → OFI → VÉU — escolha manual por período</h3><p class="muted">Escolha até quatro oficiantes diferentes. A escolha é protegida na distribuição automática. Outras tarefas automáticas conflitantes serão liberadas; tarefas manuais conflitantes exigem sua confirmação.</p><div id="psiManualLista"></div></div><div class="card"><h3>VES automática — NN e PSI → OFI</h3><p class="muted">A VES começa na hora cheia ou meia hora imediatamente anterior e termina exatamente no início da NN ou PSI. Não é necessário definir duração. A mesma oficiante realizará as tarefas vinculadas.</p></div><div class="card"><h3>NN — períodos deste sábado</h3><p class="muted">Para escolher entre oficiantes diferentes ou a mesma oficiante, acesse Configurações → NN, junto aos horários padrão.</p><div id="nnManualLista"></div><div id="listaNN"></div></div><div class="card"><h3>Lanche e apoios flexíveis — preenchimento automático</h3><p class="muted">Ao clicar em “Aplicar horários, distribuir tarefas e gerar PDF”, o sistema primeiro cobre as tarefas essenciais. Oferece lanche de 30 minutos, distribui AIN, ABA, TRM, ASV, LAV e ROB2 em blocos de 30 minutos ou 1 hora, e completa lacunas com EST. O lanche permanece sempre em 30 minutos. Não altera escolhas manuais. Mais de uma oficiante pode estar em LAV ou no lanche ao mesmo tempo. Nenhum reforço é obrigatório e todas as designações podem ser alteradas manualmente.</p></div><div class="card"><h3>Tarefas comuns</h3><p class="muted">Escolha durações de 30 minutos até 5 horas. A duração padrão é uma preferência; você pode ajustá-la neste sábado.</p><div class="grid"><div><label>Tarefa</label><select id="comumTipo"></select></div><div><label>Início</label><input type="time" id="comumInicio" value="08:00" step="1800"></div><div><label>Duração (ajustável neste sábado)</label><select id="comumDur"><option value="30">30 minutos</option><option value="60">1 hora</option><option value="90">1h30</option><option value="120">2 horas</option><option value="150">2h30</option><option value="180">3 horas</option><option value="210">3h30</option><option value="240">4 horas</option><option value="270">4h30</option><option value="300">5 horas</option></select></div><div><label>Quantidade de oficiantes</label><input id="comumQtd" type="number" min="1" max="10" value="1"></div></div><div class="actions"><button onclick="adicionarComum()">Adicionar período</button></div><div class="grid"><div><label for="filtroComuns">Consultar tarefas e quantidades cadastradas</label><select id="filtroComuns" onchange="filtrarComuns()"><option value="">— Selecione uma tarefa para consultar —</option></select></div></div><div id="listaComuns"></div></div><div class="card"><h3>Editar escala visualmente</h3><p class="muted">Clique na célula para escolher inclusive tarefas já ocupadas e transferi-las para outra oficiante. O sistema avisa sobre substituições e conflitos. As linhas seguem a ordem do PDF; alterações manuais são protegidas.</p><div id="gradeVisual" class="scroll"></div><div id="editorVisual" class="notice" style="display:none;margin-top:12px"></div></div><div id="designacoes" style="display:none" aria-hidden="true"></div></section>
 <section id="presenca"><div class="card"><h2>Presença real após o sábado</h2><label>Data</label><input type="date" id="dataPresenca"><div class="actions"><button onclick="renderPresenca()">Consultar</button></div><div id="listaPresenca"></div></div><div class="card"><h3>Resumo mensal</h3><label>Mês</label><input type="month" id="mesRel"><button onclick="renderRelatorio()">Gerar relatório</button><div id="relatorio"></div></div></section>
 <section id="config"><div class="card"><h2>ACI — limite de oficiantes para exceção</h2><p class="muted">Quando a quantidade de oficiantes confirmadas for menor ou igual ao limite, a ACI será escalada somente no período de prioridade especial cadastrado no Catálogo de tarefas. Acima do limite, o sistema tentará primeiro o turno completo, usando o período especial se necessário. Sempre uma única oficiante.</p><div class="grid"><div><label for="aciLimite">Limite de oficiantes confirmadas</label><input id="aciLimite" type="number" min="0" max="999" step="1" onchange="setLimiteACI(this.value)"></div></div><p class="muted">Exemplo: limite 17 → com 17 ou menos, usar a exceção; com 18 ou mais, tentar o turno completo. Para alterar o horário da exceção, edite “Prioridades por horário — ACI” abaixo.</p></div><div class="card"><h2>APP — Acompanhante de Própria (manual)</h2><p class="muted">Adicione quantos períodos precisar neste sábado. Escolha a oficiante de cada período. A APP não tem prioridade automática e será preservada ao gerar o PDF. Uma oficiante por período.</p><div class="grid"><div><label>Início</label><input id="appInicio" type="time" value="08:00"></div><div><label>Fim</label><input id="appFim" type="time" value="09:00"></div><div><label>Oficiante</label><select id="appOficiante"></select></div></div><div class="actions"><button type="button" onclick="adicionarAPP()">Adicionar período APP</button></div><div id="appPeriodos"></div></div><div class="card"><h2>NN — distribuição das oficiantes</h2><p class="muted">Escolha como distribuir as oficiantes nos quatro horários de NN. A opção vale para o sábado selecionado em Cronograma de sábado. Caso ainda não exista um cronograma, selecione a data e clique em Criar / atualizar estrutura antes de escolher.</p><label for="nnModo">Distribuição da NN neste sábado</label><select id="nnModo" onchange="setNNModo(this.value)"><option value="diferentes">Priorizar 4 oficiantes diferentes (repetir se necessário)</option><option value="flexivel">Flexível — oficiantes diferentes ou repetidas</option><option value="mesma">Mesma oficiante nos 4 períodos</option></select><p class="muted" id="nnModoAviso">A configuração é salva para cada sábado.</p></div><div class="card"><h2>NN — janela de horários padrão</h2><p class="muted">Defina aqui os horários especiais da NN para os próximos sábados. Cada período tem início e fim; é sempre uma oficiante por período (máximo de quatro períodos). Os horários são usados automaticamente em todos os cronogramas; a distribuição das oficiantes pode ser ajustada por sábado.</p><div id="nnConfigLista"></div><div class="grid"><div><label>Início</label><input id="nnConfigInicio" type="time" value="09:15" step="60"></div><div><label>Fim</label><input id="nnConfigFim" type="time" value="09:30" step="60"></div><div><label>Oficiantes</label><input id="nnConfigQtd" type="number" value="1" disabled></div></div><div class="actions"><button onclick="adicionarNNPadrao()">Adicionar horário padrão NN</button></div></div><div class="card"><h2>Períodos especiais</h2><p class="muted">Horários padrão editáveis para novos cronogramas. Alterações não modificam escalas já criadas.</p><div id="configs"></div><button onclick="salvarConfigs()">Salvar configurações</button></div><div class="card"><h2>Catálogo de tarefas e esforço físico</h2><p class="muted">Cadastre uma vez a exigência física de cada tarefa. Defina duração preferencial e duração mínima para cada tarefa. Funções fixas permanecem durante todo o turno.</p><p class="muted">Prioridade 1 é a mais alta. A duração padrão é usada ao adicionar tarefas comuns. Períodos especiais podem elevar a prioridade apenas nos horários definidos.</p><div id="catalogo"></div><div class="grid"><div><label>Nova sigla</label><input id="novaSigla" maxlength="12" placeholder="Ex.: ABC"></div><div><label>Descrição</label><input id="novaDescricao" placeholder="Nome da tarefa"></div></div><div class="actions"><button onclick="adicionarTarefa()">Adicionar tarefa</button></div></div></section>
 <section id="atividades"><div class="card"><h2>Atividades e financeiro</h2><p>Controle de participantes e pagamentos por oficiante. Os familiares são informados apenas por quantidade.</p><div class="grid"><div><label>Nome da atividade</label><input id="atNome" placeholder="Ex.: Confraternização"></div><div><label>Data</label><input id="atData" type="date"></div><div><label>Local</label><input id="atLocal"></div><div><label>Prazo para pagamento</label><input id="atPrazo" type="date"></div><div><label>Valor adulto (R$)</label><input id="atAdulto" type="number" min="0" step="0.01" value="40"></div><div><label>Valor criança pagante (R$)</label><input id="atCrianca" type="number" min="0" step="0.01" value="20"></div><div><label>Regra de idade do buffet (opcional)</label><input id="atIdades" placeholder="Ex.: até 5 anos grátis"></div></div><button onclick="criarAtividade()">Criar atividade</button></div><div class="card"><label>Selecionar atividade</label><select id="atSelecionada" onchange="renderAtividades()"></select><div id="atResumo"></div><div id="atExtras" class="card" style="background:#f5f8fa"><h3>Participantes somente desta atividade</h3><p class="muted">Não entram no cadastro de oficiantes nem nos cronogramas.</p><div class="grid"><div><label>Nome do participante</label><input id="atExtraNome" placeholder="Nome completo"></div><div style="align-self:end"><button onclick="adicionarExtraAtividade()">Adicionar participante</button></div></div></div><div id="atEnquete"></div><div id="atParticipantes"></div><div id="atPagamentos"></div><div id="atDespesas"></div></div></section><section id="dados"><div class="card"><h2>Sincronização entre Mac e iPhone</h2><p class="muted">Use o mesmo e-mail e senha cadastrados em Authentication → Users no Supabase. A chave publishable pode ficar neste navegador; nunca use a secret key ou service_role.</p><div class="grid"><div><label>Endereço do projeto</label><input id="syncUrl" value="https://voexacjfxlfaixxulbmd.supabase.co" autocomplete="off"></div><div><label>Publishable key (sb_publishable_...)</label><input id="syncKey" type="password" autocomplete="off" placeholder="Cole a chave publishable"></div><div><label>E-mail de acesso</label><input id="syncEmail" type="email" autocomplete="username"></div><div><label>Senha de acesso</label><input id="syncPassword" type="password" autocomplete="current-password"></div></div><div class="actions"><button type="button" onclick="syncEntrar()">Entrar no Supabase</button><button type="button" class="secondary" onclick="syncBaixar()">Baixar dados da nuvem</button><button type="button" class="secondary" onclick="syncEnviar()">Enviar dados deste aparelho</button><button type="button" class="secondary" onclick="syncSair()">Sair</button></div><p id="syncStatus" class="notice">Ainda não conectado. Faça backup antes da primeira sincronização. Após conectar, a sincronização automática verifica mudanças e protege contra conflitos.</p></div><div class="card"><h2>Backup e restauração</h2><p>Os dados ficam neste navegador. Para evitar perdas, exporte um backup após alterações importantes.</p><div class="actions"><button onclick="backup()">Baixar backup JSON</button><label class="secondary" style="padding:10px;background:#eeeeee;border-radius:8px;cursor:pointer">Restaurar backup <input type="file" id="restaurar" accept=".json,application/json" style="display:none"></label></div><p class="notice">Esta versão usa autenticação do Supabase para sincronização, mas os dados locais continuam no armazenamento do navegador. Não possui WhatsApp integrado nem avisos automáticos em segundo plano. Evite usá-la como repositório definitivo de dados pessoais antes de implantarmos proteção e backup adequados.</p></div></section></main>
@@ -71,8 +71,8 @@ function addPrioridadePeriodo(t){db.catalogo[t].periodosPrioridade.push({inicio:
 function remPrioridadePeriodo(t,i){db.catalogo[t].periodosPrioridade.splice(i,1);save();renderCatalogo()}
 function setPrioridadePeriodo(t,i,c,v){const p=db.catalogo[t].periodosPrioridade[i];const antigo=p[c];p[c]=c==='prioridade'?Number(v):v;if(!/^\d\d:\d\d$/.test(p.inicio)||!/^\d\d:\d\d$/.test(p.fim)||minutes(p.inicio)>=minutes(p.fim)||minutes(p.inicio)<420||minutes(p.fim)>750||p.prioridade<1||p.prioridade>99){p[c]=antigo;alert('Use horários entre 07:00 e 12:30, com início anterior ao fim, e prioridade entre 1 e 99.');renderCatalogo();return}save()}
 function atualizarDuracaoComum(){const item=db.catalogo[$('comumTipo').value];if(item&&[30,60,90,120,150,180,210,240,270,300,330].includes(Number(item.duracao)))$('comumDur').value=String(item.duracao)}
-const $=id=>document.getElementById(id),save=()=>{localStorage.setItem(KEY,JSON.stringify(db));if(typeof autoMarkDirty==='function')autoMarkDirty();};const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));const minutes=s=>{const [h,m]=(s||'00:00').split(':').map(Number);return h*60+m};const fmt=n=>String(Math.floor(n/60)).padStart(2,'0')+':'+String(n%60).padStart(2,'0');const uid=()=>String(Date.now())+Math.random().toString(36).slice(2,6);const pessoa=id=>db.pessoas.find(p=>p.id===id);const participantesAtividade=a=>[...db.pessoas,...(a?.extras||[]).map(x=>({id:x.id,nome:x.nome,externo:true}))].sort((x,y)=>x.nome.localeCompare(y.nome,'pt-BR',{sensitivity:'base'}));const sabNumero=date=>Math.ceil(Number(date.slice(-2))/7);const validoSab=date=>date&&new Date(date+'T12:00:00').getDay()===6;const veuStatus=p=>p.veuStatus||((p.skills||[]).includes('VEU')?'apta':'nao_apta');const podeVeu=(p,indice)=>veuStatus(p)==='apta'||(veuStatus(p)==='treinamento'&&[1,3].includes(indice));const aptaSlot=(p,slot)=>slot.tipo==='VEU'?podeVeu(p,slot.i):apta(p,slot.tipo);const apta=(p,role)=>role==='LANCHE'||(role==='ROB2'&&(p.skills||[]).includes('ROB'))||role==='RPR'||(p.skills||[]).includes(role)||(role==='PSIOFI'&&(p.skills||[]).includes('PSI')&&(p.skills||[]).includes('OFI'));function tab(id){document.querySelectorAll('section').forEach(e=>e.classList.toggle('active',e.id===id));document.querySelectorAll('#nav button').forEach(b=>b.classList.toggle('secondary',b.dataset.tab!==id));if(id==='inicio')renderInicio();if(id==='pessoas'){montarHabilidades();renderPessoas();}if(id==='config')renderConfigs();if(id==='escala'){renderComumTipo();renderEscala();}if(id==='presenca')renderPresenca();if(id==='atividades')renderAtividades()}document.querySelectorAll('#nav button').forEach(b=>b.onclick=()=>tab(b.dataset.tab));function renderInicio(){const hoje=new Date(),ano=hoje.getFullYear();const diaDoAno=d=>Math.floor((Date.UTC(d.getFullYear(),d.getMonth(),d.getDate())-Date.UTC(d.getFullYear(),0,1))/86400000);const dif=(m,d)=>{let alvo=new Date(ano,m-1,d);if(alvo<new Date(hoje.getFullYear(),hoje.getMonth(),hoje.getDate()))alvo=new Date(ano+1,m-1,d);return Math.round((Date.UTC(alvo.getFullYear(),alvo.getMonth(),alvo.getDate())-Date.UTC(hoje.getFullYear(),hoje.getMonth(),hoje.getDate()))/86400000)};const anivers=db.pessoas.filter(p=>p.aniv&&/^\d\d\/\d\d$/.test(p.aniv)).map(p=>({p,dif:dif(Number(p.aniv.slice(3)),Number(p.aniv.slice(0,2)))})).sort((a,b)=>a.dif-b.dif);$('resumo').innerHTML=`<p><b>${db.pessoas.length}</b> oficiantes cadastradas • <b>${Object.keys(db.escalas).length}</b> sábados registrados</p>`;$('aniversarios').innerHTML='<h3>🎂 Aniversários próximos</h3>'+(anivers.filter(x=>x.dif<=30).map(x=>`<p>${esc(x.p.nome)} — ${esc(x.p.aniv)} ${x.dif===0?'<b>Hoje!</b>':x.dif===3?'<b>Faltam 3 dias!</b>':`(em ${x.dif} dias)`}</p>`).join('')||'<p class="muted">Nenhum aniversário nos próximos 30 dias.</p>')}
-$('formPessoa').onsubmit=e=>{e.preventDefault();const id=$('pId').value||uid();const p={id,nome:$('pNome').value.trim(),aniv:$('pAniv').value.trim(),freq:$('pFreq').value,sab:$('pSab').value,fixa:$('pFixa').value,fixaSabados:[...document.querySelectorAll('#pFixaSabados input:checked')].map(x=>Number(x.value)),skills:[...document.querySelectorAll('#habilitacoes input:checked')].map(x=>x.value),veuStatus:$('pVeuStatus').value,obs:$('pObs').value};if(!p.nome)return;const i=db.pessoas.findIndex(x=>x.id===id);if(i>=0)db.pessoas[i]=p;else db.pessoas.push(p);save();resetPessoa();renderPessoas()};function resetPessoa(){$('formPessoa').reset();$('pId').value='';$('pVeuStatus').value='nao_apta';$('pFixa').value='';document.querySelectorAll('#pFixaSabados input').forEach(x=>x.checked=true);atualizarContagemHabilidades()}function editarPessoa(id){const p=pessoa(id);$('pId').value=id;$('pNome').value=p.nome;$('pAniv').value=p.aniv||'';$('pFreq').value=p.freq;$('pSab').value=p.sab||'1';$('pFixa').value=p.fixa||'';document.querySelectorAll('#pFixaSabados input').forEach(x=>x.checked=!Array.isArray(p.fixaSabados)||p.fixaSabados.includes(Number(x.value)));$('pObs').value=p.obs||'';$('pVeuStatus').value=p.veuStatus||((p.skills||[]).includes('VEU')?'apta':'nao_apta');document.querySelectorAll('#habilitacoes input').forEach(x=>x.checked=(p.skills||[]).includes(x.value));atualizarContagemHabilidades();window.scrollTo(0,0)}function excluirPessoa(id){if(!confirm('Excluir esta oficiante do cadastro? Escalas anteriores podem continuar referenciando seu nome.'))return;db.pessoas=db.pessoas.filter(p=>p.id!==id);save();renderPessoas()}function renderPessoas(){$('listaPessoas').innerHTML='<table><tr><th>Nome</th><th>Frequência</th><th>Aniversário</th><th>Habilidades</th><th></th></tr>'+db.pessoas.slice().sort((a,b)=>a.nome.localeCompare(b.nome)).map(p=>`<tr><td>${esc(p.nome)}</td><td>${esc(p.freq)}${p.fixa?'<div class="pill">Fixa: '+esc(p.fixa)+' ('+esc((p.fixaSabados||[1,2,3,4,5]).join('º, '))+'º)</div>':''}</td><td>${esc(p.aniv||'—')}</td><td>${esc((p.skills||[]).join(', '))}<div class="tiny">VÉU: ${esc(p.veuStatus||((p.skills||[]).includes('VEU')?'apta':'nao_apta'))}</div></td><td><button class="secondary" onclick="editarPessoa('${p.id}')">Editar</button> <button class="danger" onclick="excluirPessoa('${p.id}')">Excluir</button></td></tr>`).join('')+'</table>'}
+const $=id=>document.getElementById(id),save=()=>{localStorage.setItem(KEY,JSON.stringify(db));if(typeof autoMarkDirty==='function')autoMarkDirty();};const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));const minutes=s=>{const [h,m]=(s||'00:00').split(':').map(Number);return h*60+m};const fmt=n=>String(Math.floor(n/60)).padStart(2,'0')+':'+String(n%60).padStart(2,'0');const uid=()=>String(Date.now())+Math.random().toString(36).slice(2,6);const pessoa=id=>db.pessoas.find(p=>p.id===id);const participantesAtividade=a=>[...db.pessoas,...(a?.extras||[]).map(x=>({id:x.id,nome:x.nome,externo:true}))].sort((x,y)=>x.nome.localeCompare(y.nome,'pt-BR',{sensitivity:'base'}));const sabNumero=date=>Math.ceil(Number(date.slice(-2))/7);const validoSab=date=>date&&new Date(date+'T12:00:00').getDay()===6;const veuStatus=p=>p.veuStatus||((p.skills||[]).includes('VEU')?'apta':'nao_apta');const podeVeu=(p,indice)=>veuStatus(p)==='apta'||(veuStatus(p)==='treinamento'&&[1,3].includes(indice));const aptaSlot=(p,slot)=>slot.tipo==='VEU'?podeVeu(p,slot.i):apta(p,slot.tipo);const apta=(p,role)=>role==='LANCHE'||role==='ROB2'||role==='RPR'||(p.skills||[]).includes(role)||(role==='PSIOFI'&&(p.skills||[]).includes('PSI')&&(p.skills||[]).includes('OFI'));function tab(id){document.querySelectorAll('section').forEach(e=>e.classList.toggle('active',e.id===id));document.querySelectorAll('#nav button').forEach(b=>b.classList.toggle('secondary',b.dataset.tab!==id));if(id==='inicio')renderInicio();if(id==='pessoas'){montarHabilidades();renderPessoas();}if(id==='config')renderConfigs();if(id==='escala'){renderComumTipo();renderEscala();}if(id==='presenca')renderPresenca();if(id==='atividades')renderAtividades()}document.querySelectorAll('#nav button').forEach(b=>b.onclick=()=>tab(b.dataset.tab));function renderInicio(){const hoje=new Date(),ano=hoje.getFullYear();const diaDoAno=d=>Math.floor((Date.UTC(d.getFullYear(),d.getMonth(),d.getDate())-Date.UTC(d.getFullYear(),0,1))/86400000);const dif=(m,d)=>{let alvo=new Date(ano,m-1,d);if(alvo<new Date(hoje.getFullYear(),hoje.getMonth(),hoje.getDate()))alvo=new Date(ano+1,m-1,d);return Math.round((Date.UTC(alvo.getFullYear(),alvo.getMonth(),alvo.getDate())-Date.UTC(hoje.getFullYear(),hoje.getMonth(),hoje.getDate()))/86400000)};const anivers=db.pessoas.filter(p=>p.aniv&&/^\d\d\/\d\d$/.test(p.aniv)).map(p=>({p,dif:dif(Number(p.aniv.slice(3)),Number(p.aniv.slice(0,2)))})).sort((a,b)=>a.dif-b.dif);$('resumo').innerHTML=`<p><b>${db.pessoas.length}</b> oficiantes cadastradas • <b>${Object.keys(db.escalas).length}</b> sábados registrados</p>`;$('aniversarios').innerHTML='<h3>🎂 Aniversários próximos</h3>'+(anivers.filter(x=>x.dif<=30).map(x=>`<p>${esc(x.p.nome)} — ${esc(x.p.aniv)} ${x.dif===0?'<b>Hoje!</b>':x.dif===3?'<b>Faltam 3 dias!</b>':`(em ${x.dif} dias)`}</p>`).join('')||'<p class="muted">Nenhum aniversário nos próximos 30 dias.</p>')}
+$('formPessoa').onsubmit=e=>{e.preventDefault();const id=$('pId').value||uid();const p={id,nome:$('pNome').value.trim(),aniv:$('pAniv').value.trim(),freq:$('pFreq').value,sab:$('pSab').value,fixa:$('pFixa').value,fixaSabados:[...document.querySelectorAll('#pFixaSabados input:checked')].map(x=>Number(x.value)),skills:[...document.querySelectorAll('#habilitacoes input:checked')].map(x=>x.value),veuStatus:$('pVeuStatus').value,maxIN:Number($('pMaxIN').value),obs:$('pObs').value};if(!p.nome)return;const i=db.pessoas.findIndex(x=>x.id===id);if(i>=0)db.pessoas[i]=p;else db.pessoas.push(p);save();resetPessoa();renderPessoas()};function resetPessoa(){$('formPessoa').reset();$('pId').value='';$('pVeuStatus').value='nao_apta';$('pMaxIN').value='2';$('pFixa').value='';document.querySelectorAll('#pFixaSabados input').forEach(x=>x.checked=true);atualizarContagemHabilidades()}function editarPessoa(id){const p=pessoa(id);$('pId').value=id;$('pNome').value=p.nome;$('pAniv').value=p.aniv||'';$('pFreq').value=p.freq;$('pSab').value=p.sab||'1';$('pFixa').value=p.fixa||'';document.querySelectorAll('#pFixaSabados input').forEach(x=>x.checked=!Array.isArray(p.fixaSabados)||p.fixaSabados.includes(Number(x.value)));$('pObs').value=p.obs||'';$('pVeuStatus').value=p.veuStatus||((p.skills||[]).includes('VEU')?'apta':'nao_apta');$('pMaxIN').value=String(limiteIN(p));document.querySelectorAll('#habilitacoes input').forEach(x=>x.checked=(p.skills||[]).includes(x.value));atualizarContagemHabilidades();window.scrollTo(0,0)}function excluirPessoa(id){if(!confirm('Excluir esta oficiante do cadastro? Escalas anteriores podem continuar referenciando seu nome.'))return;db.pessoas=db.pessoas.filter(p=>p.id!==id);save();renderPessoas()}function renderPessoas(){$('listaPessoas').innerHTML='<table><tr><th>Nome</th><th>Frequência</th><th>Aniversário</th><th>Habilidades</th><th></th></tr>'+db.pessoas.slice().sort((a,b)=>a.nome.localeCompare(b.nome)).map(p=>`<tr><td>${esc(p.nome)}</td><td>${esc(p.freq)}${p.fixa?'<div class="pill">Fixa: '+esc(p.fixa)+' ('+esc((p.fixaSabados||[1,2,3,4,5]).join('º, '))+'º)</div>':''}</td><td>${esc(p.aniv||'—')}</td><td>${esc((p.skills||[]).join(', '))}<div class="tiny">VÉU: ${esc(p.veuStatus||((p.skills||[]).includes('VEU')?'apta':'nao_apta'))} · Máx. IN: ${limiteIN(p)}</div></td><td><button class="secondary" onclick="editarPessoa('${p.id}')">Editar</button> <button class="danger" onclick="excluirPessoa('${p.id}')">Excluir</button></td></tr>`).join('')+'</table>'}
 function setLimiteACI(valor){const n=Number(valor);if(!Number.isInteger(n)||n<0||n>999){alert('Informe um número inteiro entre 0 e 999.');$('aciLimite').value=db.aciLimiteExcecao;return;}db.aciLimiteExcecao=n;save();}
 function renderCatalogo(){const nomes=Object.keys(db.catalogo).sort((a,b)=>(Number(db.catalogo[a].prioridade)||99)-(Number(db.catalogo[b].prioridade)||99)||a.localeCompare(b));$('catalogo').innerHTML='<div class="scroll"><table><tr><th>Tarefa</th><th>Prioridade geral</th><th>Duração preferencial</th><th>Mínima permitida</th><th>Esforço físico</th><th>Cor no cronograma/PDF</th></tr>'+nomes.map(t=>{const c=db.catalogo[t],periodos=c.periodosPrioridade||[];return `<tr><td><b>${esc(t)}</b></td><td><input type="number" min="1" max="99" value="${Number(c.prioridade)||99}" onchange="setTarefaCampo('${t}','prioridade',this.value)"></td><td><select onchange="setTarefaCampo('${t}','duracao',this.value)">${selectOptions([['30','30 minutos'],['60','1 hora'],['90','1h30'],['120','2 horas'],['150','2h30'],['180','3 horas'],['210','3h30'],['240','4 horas'],['270','4h30'],['300','5 horas'],['330','Turno inteiro (5h30)']],String(c.duracao||30))}</select></td><td><select onchange="setTarefaCampo('${t}','duracaoMinima',this.value)">${selectOptions([['30','30 minutos'],['60','1 hora'],['90','1h30'],['120','2 horas'],['150','2h30'],['180','3 horas'],['210','3h30'],['240','4 horas'],['270','4h30'],['300','5 horas'],['330','5h30']],String(c.duracaoMinima||30))}</select></td><td><select onchange="setEsforco('${t}',this.value)">${selectOptions([['sentada','Sentada'],['empe','Em pé'],['alternada','Alternada']],c.esforco||'alternada')}</select></td><td><input type="color" aria-label="Cor da tarefa ${esc(t)}" value="${corTarefa(t)}" onchange="setCorTarefa('${t}',this.value)"></td></tr><tr><td colspan="6"><details ${t==='ACI'?'open':''}><summary>Prioridades por horário — ${esc(t)} (${periodos.length} período(s))</summary><div class="grid">${periodos.map((p,i)=>`<div class="card"><label>Início</label><input type="time" value="${esc(p.inicio)}" onchange="setPrioridadePeriodo('${t}',${i},'inicio',this.value)"><label>Fim</label><input type="time" value="${esc(p.fim)}" onchange="setPrioridadePeriodo('${t}',${i},'fim',this.value)"><label>Prioridade especial</label><input type="number" min="1" max="99" value="${Number(p.prioridade)}" onchange="setPrioridadePeriodo('${t}',${i},'prioridade',this.value)"><button class="danger" onclick="remPrioridadePeriodo('${t}',${i})">Remover período</button></div>`).join('')}</div><button class="secondary" onclick="addPrioridadePeriodo('${t}')">+ Adicionar período</button></details></td></tr>`}).join('')+'</table></div>'}
 function setEsforco(t,v){db.catalogo[t].esforco=v;save()}function adicionarTarefa(){const t=$('novaSigla').value.trim().toUpperCase().replace(/[^A-Z0-9]/g,'');if(!t||db.catalogo[t])return alert('Informe uma sigla nova.');db.catalogo[t]={descricao:$('novaDescricao').value.trim()||t,esforco:'alternada',prioridade:Object.keys(db.catalogo).length+1,duracao:30,periodosPrioridade:[]};save();$('novaSigla').value='';$('novaDescricao').value='';montarHabilidades();renderCatalogo();renderComumTipo()}function atualizarContagemHabilidades(){const todas=[...document.querySelectorAll('#habilitacoes input[type="checkbox"]')];const marcadas=todas.filter(c=>c.checked).length;const alvo=$('contagemHabilidades');if(alvo)alvo.textContent=`${marcadas} de ${todas.length} tarefas selecionadas`;}function marcarTodasHabilidades(valor){document.querySelectorAll('#habilitacoes input[type="checkbox"]').forEach(c=>c.checked=valor);atualizarContagemHabilidades();}function montarHabilidades(){const old=[...document.querySelectorAll('#habilitacoes input:checked')].map(e=>e.value);$('habilitacoes').innerHTML=Object.keys(db.catalogo).sort().map(t=>`<label><input type="checkbox" value="${esc(t)}" ${old.includes(t)?'checked':''}> ${esc(t)}</label>`).join('');$('pFixa').innerHTML='<option value="">Sem função fixa</option>'+Object.keys(db.catalogo).sort().map(t=>`<option value="${esc(t)}">${esc(t)}</option>`).join('');document.querySelectorAll('#habilitacoes input').forEach(c=>c.addEventListener('change',atualizarContagemHabilidades));atualizarContagemHabilidades()}function renderConfigs(){$('aciLimite').value=db.aciLimiteExcecao;renderCatalogo();$('configs').innerHTML=['RPR','REC','VEU','PSIOFI'].map(tipo=>`<div class="card"><h3>${tipo==='PSIOFI'?'PSI → OFI':tipo} <span class="pill">${tipo==='VEU'?'3 oficiantes/período':tipo==='RPR'?'Todas as presentes':'1 oficiante/período'}</span></h3><div id="c-${tipo}"></div>${tipo==='REC'?`<div id="recGrupos"></div><p class="muted">REC: Grupo A (1º e 3º sábados), Grupo B (2º e 4º). Trocas individuais são feitas no cronograma.</p>`:''}</div>`).join('');['RPR','REC','VEU','PSIOFI'].forEach(renderConfigRows);renderRecGrupos();renderNNPadrao()}function renderNNPadrao(){const el=$('nnConfigLista');if(!el)return;el.innerHTML=db.nnPadrao.length?'<div class="scroll"><table><tr><th>Início</th><th>Fim</th><th>Oficiantes</th><th></th></tr>'+db.nnPadrao.map((c,i)=>`<tr><td>${esc(c.inicio)}</td><td>${esc(c.fim)}</td><td>${c.qtd}</td><td><button class="danger" onclick="removerNNPadrao(${i})">Excluir</button></td></tr>`).join('')+'</table></div>':'<p class="muted">Nenhum horário de NN cadastrado. Adicione os quatro períodos aqui em Configurações.</p>'}
@@ -336,7 +336,7 @@ function aplicarEditorVisual(id,t){const e=escAtual(),ch=$('visualEscolha').valu
  if(conflitos.length)avisos.push('Retirar do destino: '+conflitos.map(o=>o.tipo+' '+fmt(o.a)+'–'+fmt(o.b)).join(', ')+'. Essas tarefas ficarão sem designação.');
  if(fixaVisual(e,id)&&fixaVisual(e,id)!==v.tipo)avisos.push('Interromper temporariamente a função fixa '+fixaVisual(e,id)+'.');
  if(!aptaSlot(p,{tipo:v.tipo,id:v.ch,i:Number(v.ch.split('-')[1])||0}))avisos.push('ATENÇÃO: habilitação para '+v.tipo+' não confirmada.');
- if(v.tipo==='IN'){const copia={...e,assign:{...e.assign}};for(const o of conflitos)delete copia.assign[o.ch];copia.assign[ch]=id;if(violacoesIN(copia,id))return alert('A transferência ultrapassaria o limite de 2 horas consecutivas de IN.');}
+ if(v.tipo==='IN'&&!podeReceberIN(e,id,ch))return alert('Limite individual de IN atingido. Confira o cadastro da oficiante.');if(v.tipo==='IN'){const copia={...e,assign:{...e.assign}};for(const o of conflitos)delete copia.assign[o.ch];copia.assign[ch]=id;if(violacoesIN(copia,id))return alert('A transferência ultrapassaria o limite de 2 horas consecutivas de IN.');}
  if(avisos.length&&!confirm(avisos.join('\n')+'\n\nConfirmar a alteração manual?'))return;
  for(const o of conflitos){delete e.assign[o.ch];e.manuais[o.ch]=true}
  e.assign[ch]=id;e.manuais[ch]=true;if(ch.startsWith('REC-')){e.recManuais ||= {};e.recManuais[ch]=true}
@@ -349,12 +349,28 @@ function criarPeriodosObrigatorios(e){
  const fixas=new Set(db.pessoas.map(p=>p.fixa).filter(Boolean));
  const excluidas=new Set(['RPR','REC','VEU','PSIOFI','NN','VES','ROB2','LANCHE','ASV','EST','ACI','APP',...fixas]);
  const criadas=[];
+ // Duração: POV, C2 e SC ficam em 30 min; as demais tarefas (IN inclusive) em blocos de 1h cheios (08-09, 09-10...),
+ // exceto o primeiro (07:30-08:00) e o último (12:00-12:30), de 30 min.
+ const duracaoPadrao=t=>['POV','C2','SC'].includes(t)?30:60;
+ const padraoDe=t=>{const d=duracaoPadrao(t),r=[];let a=450;while(a<750){let m=Math.min(d,750-a);if(m>=60&&a%60!==0)m=30;if(m<30)break;r.push(fmt(a)+'-'+fmt(a+m));a+=m;}return r;};
+ // Escalas antigas com a tarefa automática em outro padrão são refeitas, desde que não tenham designação manual.
+ for(const tipo of ORDEM_PRIORIDADE){
+   if(excluidas.has(tipo)||!db.catalogo[tipo])continue;
+   const esperado=padraoDe(tipo);
+   const auto=e.comuns.filter(c=>c.tipo===tipo&&c.origem==='obrigatoria'&&c.automatico);
+   const ok=auto.length===esperado.length&&esperado.every(x=>auto.some(c=>c.inicio+'-'+c.fim===x));
+   const qtdTipo=tipo==='IN'?3:1;
+   if(auto.length&&!ok&&!auto.some(c=>[...Array(qtdTipo).keys()].some(j=>e.manuais?.['COM-'+c.id+'-'+j]))){
+    for(const c of auto)for(let j=0;j<qtdTipo;j++)delete e.assign['COM-'+c.id+'-'+j];
+    e.comuns=e.comuns.filter(c=>!auto.includes(c));
+   }
+ }
  for(const tipo of ORDEM_PRIORIDADE){
    if(excluidas.has(tipo)||!db.catalogo[tipo])continue;
    if(e.comuns.some(c=>c.tipo===tipo&&!c.automatico))continue;
    if(e.comuns.some(c=>c.tipo===tipo&&c.origem==='obrigatoria'))continue;
    const durPreferida=Number(db.catalogo[tipo].duracao)||30;
-   const dur=Math.min(60,Math.max(30,durPreferida));
+   const dur=duracaoPadrao(tipo);
    const inicioTurno=450, fimTurno=750;
    let a=inicioTurno;
    while(a<fimTurno){
@@ -542,8 +558,8 @@ function pontuacaoEquilibrio(e,vagas,p,v){
   const distancia=Math.max(0,Math.max(xa-b,a-xb));
   if(x.tipo===v.tipo){
    // Repetir uma tarefa é uma exceção, especialmente POV, que exige permanecer em pé.
-   pontos+=(v.tipo==='POV'?400:65);
-   if(distancia<=60)pontos+=(v.tipo==='POV'?900:120);
+   pontos+=(v.tipo==='POV'?1500:300);
+   if(distancia<=60)pontos+=(v.tipo==='POV'?900:200);
   }
   if(emPe(v.tipo)&&emPe(x.tipo)){
    if(distancia===0)pontos+=850;
@@ -551,11 +567,40 @@ function pontuacaoEquilibrio(e,vagas,p,v){
    else if(distancia<=60)pontos+=160;
   }
   if(((v.tipo==='IN'&&x.tipo==='POV')||(v.tipo==='POV'&&x.tipo==='IN'))&&distancia<=60)pontos+=400;
+  // IN com folga: duas IN da mesma oficiante, ou IN perto de outra atividade cansativa, ficam o mais distantes possível.
+  if(v.tipo==='IN'||x.tipo==='IN'){
+   const ambasIN=v.tipo==='IN'&&x.tipo==='IN';
+   if(ambasIN||(v.tipo==='IN'&&emPe(x.tipo))||(x.tipo==='IN'&&emPe(v.tipo))){
+    if(distancia===0)pontos+=ambasIN?3000:2500;
+    else if(distancia<=30)pontos+=ambasIN?2500:1500;
+    else if(distancia<=60)pontos+=ambasIN?1800:900;
+    else if(distancia<=90)pontos+=ambasIN?900:400;
+    else if(distancia<=120)pontos+=ambasIN?400:150;
+   }
+  }
  }
  return pontos;
 }
 // Limite de IN por oficiante: até duas designações por sábado em equipes normais.
 // Com até 12 presentes, uma terceira IN só é considerada quando não há candidata com menos de duas.
+// Menor distância (min) entre a vaga v e qualquer IN ou atividade em pé já atribuída à pessoa. 0 = encostadas.
+function distanciaMinimaEsforco(e,vagas,id,v){
+ const ehEmPe=t=>t==='POV'||t==='IN'||db.catalogo[t]?.esforco==='empe';
+ const a=minutes(v.inicio),b=minutes(v.fim);let m=Infinity;
+ for(const x of vagas){
+  if(x.id===v.id||e.assign[x.id]!==id||!ehEmPe(x.tipo))continue;
+  const d=Math.max(0,Math.max(minutes(x.inicio)-b,a-minutes(x.fim)));
+  if(d<m)m=d;
+ }
+ return m;
+}
+// VÉU: oficiante em treinamento entra no VÉU somente uma vez por turno.
+function qtdVeuDe(e,id,exceto){return Object.entries(e.assign||{}).filter(([ch,pid])=>pid===id&&ch.startsWith('VEU-')&&ch!==exceto).length;}
+function limiteIN(p){return p&&[0,1,2].includes(Number(p.maxIN))&&p.maxIN!==undefined&&p.maxIN!==null&&p.maxIN!==''?Number(p.maxIN):2;}
+// Limite efetivo: quem tem limite 0 ou 1 nunca passa dele. Quem tem limite 2 só recebe uma 3ª IN no automático
+// como último recurso, para completar as 3 oficiantes por horário (use extra=true).
+function limiteINEfetivo(p){return limiteIN(p);}
+function podeReceberIN(e,id,ch,extra=false){const p=pessoa(id);return quantidadeIN(e,id)+(e.assign?.[ch]===id?0:1)<=(extra?limiteINEfetivo(p):limiteIN(p));}
 function quantidadeIN(e,id){return Object.entries(e.assign||{}).filter(([ch,pid])=>pid===id&&tipoDaVaga(e,ch)==='IN').length;}
 function equipeMuitoReduzida(e){return Object.values(e.participantes||{}).filter(x=>x.incluir).length<=12;}
 // Reequilibra IN depois de montar todas as tarefas prioritárias.
@@ -568,7 +613,8 @@ function equilibrarINGlobal(e,vagas){
   const s=e.participantes[p.id];
   if(!s?.incluir||!aptaSlot(p,v)||p.fixa&&fixaAtiva(p,e)&&p.fixa!=='IN')return false;
   if(minutes(s.inicio||'07:00')>minutes(v.inicio)||minutes(s.fim||'12:30')<minutes(v.fim))return false;
-  if(violacoesIN(e,p.id,v.id))return false;
+  if(violacoesIN(e,p.id,v.id)||!podeReceberIN(e,p.id,v.id))return false;
+  if(distanciaMinimaEsforco(e,vagas,p.id,v)<30)return false;
   return !vagas.some(o=>o.id!==v.id&&e.assign[o.id]===p.id&&!o.id.startsWith('FIXA-')&&minutes(o.inicio)<minutes(v.fim)&&minutes(v.inicio)<minutes(o.fim));
  };
  // Distribuir uma primeira IN para mais oficiantes antes de repetir em outra.
@@ -586,6 +632,277 @@ function equilibrarINGlobal(e,vagas){
  return trocas;
 }
 
+// Versao 9.9.7: distribuicao global de IN com busca de trocas entre horarios.
+function ordemReconstrucaoIN(v){
+ if(['REC','PSIOFI','VEU','NN','APP'].includes(v.tipo)||v.id.startsWith('FIXA-'))return 0;
+ if(v.tipo==='IN')return 1;
+ return 2;
+}
+function repararINComTrocas(e,vagas){
+ const ins=vagas.filter(v=>v.tipo==='IN').sort((a,b)=>minutes(a.inicio)-minutes(b.inicio));
+ const slots=new Map(vagas.map(v=>[v.id,v]));
+ const protegida=ch=>!!e.manuais?.[ch]||ch.startsWith('FIXA-')||ch.startsWith('PSIOFI-')||Object.values(e.psiVeuLinks||{}).includes(ch)||ch.startsWith('REC-');
+ const presentes=db.pessoas.filter(p=>e.participantes[p.id]?.incluir&&!(p.fixa&&fixaAtiva(p,e)));
+ const elegivel=(p,v)=>{const s=e.participantes[p.id];return !!(s&&aptaSlot(p,v)&&minutes(s.inicio||'07:00')<=minutes(v.inicio)&&minutes(s.fim||'12:30')>=minutes(v.fim));};
+ const cruza=(a,b)=>minutes(a.inicio)<minutes(b.fim)&&minutes(b.inicio)<minutes(a.fim);
+ const custo=()=>{
+  let faltas=0,adj=0,excesso=0;const porPessoa=new Map();
+  for(const v of ins){const id=e.assign[v.id];if(!id){faltas++;continue;}const arr=porPessoa.get(id)||[];arr.push(v);porPessoa.set(id,arr);}
+  let perto=0;
+  for(const [pid,arr] of porPessoa.entries()){
+   arr.sort((a,b)=>minutes(a.inicio)-minutes(b.inicio));excesso+=Math.max(0,arr.length-2);
+   for(let i=1;i<arr.length;i++){
+    const d=minutes(arr[i].inicio)-minutes(arr[i-1].fim);
+    if(d<=0)adj++;else if(d<=30)perto+=0.2;else if(d<=60)perto+=0.05;
+   }
+   // IN encostada em outra atividade em pé (POV ou tarefa marcada como em pé).
+   for(const o of vagas){
+    if(e.assign[o.id]!==pid||o.tipo==='IN'||!(o.tipo==='POV'||db.catalogo[o.tipo]?.esforco==='empe'))continue;
+    for(const v of arr){const d=Math.max(0,Math.max(minutes(o.inicio)-minutes(v.fim),minutes(v.inicio)-minutes(o.fim)));if(d===0)adj+=0.5;else if(d<=30)perto+=0.1;}
+   }
+  }
+  const equilibrio=[...porPessoa.values()].reduce((s,a)=>s+a.length*a.length,0);
+  return faltas*100000+excesso*3000+adj*3000+perto*3000+equilibrio*5;
+ };
+ const conflitos=(id,v)=>vagas.filter(o=>o.id!==v.id&&e.assign[o.id]===id&&cruza(o,v));
+ // Desloca apenas uma tarefa automatica nao-IN, mantendo tarefas protegidas.
+ const liberar=(id,v,excluidas)=>{
+  const conflitosPessoa=conflitos(id,v);
+  if(conflitosPessoa.length>1)return false;
+  if(!conflitosPessoa.length)return true;
+  const o=conflitosPessoa[0];
+  if(protegida(o.id)||['IN','APP','VEU','NN','ACI','PSIOFI','REC'].includes(o.tipo))return false;
+  for(const p of presentes){
+   if(p.id===id||excluidas.has(p.id)||!elegivel(p,o))continue;
+   if(conflitos(p.id,o).length)continue;
+   e.assign[o.id]=p.id;return true;
+  }
+  return false;
+ };
+ // Troca de janelas: quem perde a IN assume as tarefas da outra oficiante nesse mesmo horário.
+ // Resolve o caso em que todas já estão com tarefas e a IN não tem para onde ir.
+ const trocarJanela=(v,A,B)=>{
+  const cs=conflitos(B.id,v);
+  if(cs.some(o=>protegida(o.id)||['IN','APP','VEU','NN','ACI','PSIOFI','REC'].includes(o.tipo)||!elegivel(A,o)))return false;
+  e.assign[v.id]=B.id;for(const o of cs)e.assign[o.id]=A.id;
+  return !cs.some(o=>conflitos(A.id,o).length);
+ };
+ let trocas=0;
+ // Primeira etapa: explorar realocacoes individuais e trocas entre duas IN.
+ for(let rodada=0;rodada<40;rodada++){
+  let melhor=null,melhorCusto=custo();
+  for(const v of ins){if(protegida(v.id))continue;
+   const atual=e.assign[v.id];
+   for(const p of presentes){if(p.id===atual||!elegivel(p,v))continue;
+    const antes={...e.assign};
+    if(liberar(p.id,v,new Set([atual].filter(Boolean)))){
+     e.assign[v.id]=p.id;
+     if(!violacoesIN(e,p.id)&&podeReceberIN(e,p.id,v.id,true)){
+      const novo=custo();if(novo<melhorCusto){melhorCusto=novo;melhor={...e.assign};}
+     }
+    }
+    e.assign={...antes};
+    if(atual&&pessoa(atual)&&trocarJanela(v,pessoa(atual),p)&&!violacoesIN(e,p.id)&&podeReceberIN(e,p.id,v.id,true)){
+     const novo=custo();if(novo<melhorCusto){melhorCusto=novo;melhor={...e.assign};}
+    }
+    e.assign=antes;
+   }
+   // Permuta duas vagas IN, mesmo quando ambas as oficiantes estao ocupadas.
+   if(!atual)continue;
+   for(const w of ins){if(w.id===v.id||protegida(w.id)||!e.assign[w.id])continue;
+    const outro=e.assign[w.id];if(outro===atual)continue;
+    const pa=pessoa(atual),pb=pessoa(outro);
+    if(!pa||!pb||!elegivel(pa,w)||!elegivel(pb,v))continue;
+    const antes={...e.assign};e.assign[v.id]=outro;e.assign[w.id]=atual;
+    if(!violacoesIN(e,atual)&&!violacoesIN(e,outro)&&quantidadeIN(e,atual)<=limiteINEfetivo(pa)&&quantidadeIN(e,outro)<=limiteINEfetivo(pb)&&
+       !conflitos(atual,w).length&&!conflitos(outro,v).length){
+      const novo=custo();if(novo<melhorCusto){melhorCusto=novo;melhor={...e.assign};}
+    }
+    e.assign=antes;
+   }
+  }
+  if(!melhor)break;e.assign=melhor;trocas++;
+ }
+ return {trocas,resgates:0,pendentes:ins.filter(v=>!e.assign[v.id]).length};
+}
+
+// 9.9.17 experimental — busca local conjunta de IN e VÉU.
+// Somente move designações automáticas; nunca remove um VÉU para abrir uma IN.
+function otimizarINeVeu(e,vagas){
+ const ins=vagas.filter(v=>v.tipo==='IN');
+ const veus=vagas.filter(v=>v.tipo==='VEU');
+ const porId=new Map(vagas.map(v=>[v.id,v]));
+ const protegida=id=>!!e.manuais?.[id]||id.startsWith('FIXA-')||id.startsWith('PSIOFI-')||id.startsWith('REC-')||Object.values(e.psiVeuLinks||{}).includes(id);
+ const cruza=(a,b)=>minutes(a.inicio)<minutes(b.fim)&&minutes(b.inicio)<minutes(a.fim);
+ const presentes=db.pessoas.filter(p=>e.participantes[p.id]?.incluir&&!(p.fixa&&fixaAtiva(p,e)));
+ const elegivel=(p,v)=>{const s=e.participantes[p.id];return !!(s&&aptaSlot(p,v)&&minutes(s.inicio||'07:00')<=minutes(v.inicio)&&minutes(s.fim||'12:30')>=minutes(v.fim));};
+ const conflitos=(id,v)=>vagas.filter(o=>o.id!==v.id&&e.assign[o.id]===id&&cruza(o,v));
+ const adjacentes=id=>{const a=ins.filter(v=>e.assign[v.id]===id).sort((x,y)=>minutes(x.inicio)-minutes(y.inicio));return a.reduce((n,v,i)=>n+(i>0&&minutes(a[i-1].fim)>=minutes(v.inicio)?1:0),0);};
+ const custo=()=>{
+  let adj=0,excesso=0,desbalanceamento=0;
+  for(const p of presentes){const n=quantidadeIN(e,p.id);adj+=adjacentes(p.id);excesso+=Math.max(0,n-limiteIN(p));desbalanceamento+=n*n;}
+  return adj*100000+excesso*100000+desbalanceamento*5;
+ };
+ const valida=()=>{
+  for(const p of presentes){if(quantidadeIN(e,p.id)>limiteIN(p))return false;
+   if(veuStatus(p)==='treinamento'&&qtdVeuDe(e,p.id)>1)return false;
+  }
+  for(const v of vagas){const id=e.assign[v.id];if(!id)continue;
+   const p=pessoa(id);if(!p||!elegivel(p,v)||conflitos(id,v).length)return false;
+  }
+  return true;
+ };
+ let trocas=0;
+ for(let rodada=0;rodada<30;rodada++){
+  let melhor=null,melhorCusto=custo();
+  for(const v of ins){if(!e.assign[v.id]||protegida(v.id))continue;
+   const original=e.assign[v.id];
+   for(const p of presentes){if(p.id===original||!elegivel(p,v))continue;
+    const antes={...e.assign};
+    const cs=conflitos(p.id,v);
+    // Deslocar uma única tarefa que impede a IN: VÉU ou apoio automático.
+    if(cs.length<=1&&(!cs.length||!protegida(cs[0].id)&&cs[0].tipo!=='IN'&&cs[0].tipo!=='APP'&&cs[0].tipo!=='NN'&&cs[0].tipo!=='ACI')){
+     const deslocada=cs[0];
+     const substitutas=deslocada?presentes.filter(q=>q.id!==p.id&&q.id!==original&&elegivel(q,deslocada)&&!conflitos(q.id,deslocada).length):[null];
+     // Também permite que a oficiante que cede a IN assuma o VÉU.
+     if(deslocada){const antiga=pessoa(original);if(antiga&&elegivel(antiga,deslocada)&&!conflitos(original,deslocada).filter(x=>x.id!==v.id).length)substitutas.unshift(antiga);}
+     for(const q of substitutas){
+      e.assign={...antes};e.assign[v.id]=p.id;
+      if(deslocada)e.assign[deslocada.id]=q.id;
+      if(valida()){const novo=custo();if(novo<melhorCusto){melhorCusto=novo;melhor={...e.assign};}}
+     }
+    }
+    e.assign=antes;
+   }
+  }
+  if(!melhor)break;
+  e.assign=melhor;trocas++;
+ }
+ return trocas;
+}
+
+// 9.9.19: busca global para todas as vagas de IN.
+// Nunca aceita IN consecutivas e nunca excede o limite individual.
+// Não modifica vínculos VES/PSI/OFI/VÉU nem escolhas manuais.
+function planejarINGlobal(e,vagas){
+ const ins=vagas.filter(v=>v.tipo==='IN').sort((a,b)=>minutes(a.inicio)-minutes(b.inicio));
+ const fixas=new Map(ins.filter(v=>e.manuais?.[v.id]&&e.assign[v.id]).map(v=>[v.id,e.assign[v.id]]));
+ const antes={...e.assign};
+ for(const v of ins)if(!fixas.has(v.id))delete e.assign[v.id];
+ const presentes=db.pessoas.filter(p=>e.participantes[p.id]?.incluir&&!(p.fixa&&fixaAtiva(p,e))&&limiteIN(p)>0);
+ const sobrepoe=(a,b)=>minutes(a.inicio)<minutes(b.fim)&&minutes(b.inicio)<minutes(a.fim);
+ const bloqueios=new Map(presentes.map(p=>[p.id,vagas.filter(v=>v.tipo!=='IN'&&e.assign[v.id]===p.id)]));
+ const plano=new Map(fixas);
+ const dePessoa=id=>ins.filter(v=>plano.get(v.id)===id);
+ const apto=(p,v)=>{
+  const sp=e.participantes[p.id];
+  return aptaSlot(p,v)&&minutes(sp.inicio||'07:00')<=minutes(v.inicio)&&minutes(sp.fim||'12:30')>=minutes(v.fim)&&
+    !(bloqueios.get(p.id)||[]).some(b=>sobrepoe(b,v));
+ };
+ const valido=(p,v)=>{
+  if(!apto(p,v))return false;
+  const atual=dePessoa(p.id).filter(x=>x.id!==v.id);
+  if(atual.length>=limiteIN(p))return false;
+  return !atual.some(x=>sobrepoe(x,v)||minutes(x.fim)===minutes(v.inicio)||minutes(v.fim)===minutes(x.inicio));
+ };
+ for(const [ch,id] of fixas){
+  const p=pessoa(id),v=ins.find(x=>x.id===ch);
+  if(!p||!v||!apto(p,v)){e.assign=antes;return {completas:0,pendentes:ins.length,protegidasInvalidas:true};}
+ }
+ let melhor=new Map(plano),melhorQtd=plano.size,nos=0;
+ const restantes=ins.filter(v=>!fixas.has(v.id));
+ const candidatos=new Map(restantes.map(v=>[v.id,presentes.filter(p=>apto(p,v))]));
+ const procurar=(faltando)=>{
+  if(++nos>220000)return;
+  if(plano.size>melhorQtd){melhorQtd=plano.size;melhor=new Map(plano);}
+  if(!faltando.length||melhorQtd===ins.length||plano.size+faltando.length<=melhorQtd)return;
+  const opcoes=faltando.map(v=>({v,ps:candidatos.get(v.id).filter(p=>valido(p,v))}));
+  opcoes.sort((a,b)=>a.ps.length-b.ps.length||minutes(a.v.inicio)-minutes(b.v.inicio));
+  const {v,ps}=opcoes[0],rest=faltando.filter(x=>x.id!==v.id);
+  ps.sort((a,b)=>dePessoa(a.id).length-dePessoa(b.id).length);
+  for(const p of ps){plano.set(v.id,p.id);procurar(rest);plano.delete(v.id);if(melhorQtd===ins.length||nos>220000)return;}
+  procurar(rest);
+ };
+ procurar(restantes);
+ for(const v of ins)if(!fixas.has(v.id))delete e.assign[v.id];
+ for(const [ch,id] of melhor)e.assign[ch]=id;
+ return {completas:melhorQtd,pendentes:ins.length-melhorQtd,nos};
+}
+// Reduz repetição de tarefas: ninguém deve repetir a mesma tarefa (principalmente POV) se outra oficiante apta puder fazê-la.
+// Troca por janela: quem recebe a tarefa entrega as suas daquele horário, e a outra assume essas. Tarefas protegidas não são mexidas.
+// 9.9.22: limitar a simultaneidade em TODAS as tarefas, inclusive as comuns.
+// Preserva designações manuais e funções fixas. Se houver conflito protegido,
+// informa o usuário em vez de apagar sua escolha.
+function limitarSimultaneidade(e,vagas){
+ const livres=new Set(['ROB2','LAV','TRM','LANCHE']);
+ const cruza=(a,b)=>minutes(a.inicio)<minutes(b.fim)&&minutes(b.inicio)<minutes(a.fim);
+ const protegida=v=>!!e.manuais?.[v.id]||v.id.startsWith('FIXA-')||v.id.startsWith('PSIOFI-')||v.id.startsWith('REC-')||Object.values(e.psiVeuLinks||{}).includes(v.id);
+ let removidas=0,alertas=[];
+ const grupos=new Map();
+ for(const v of vagas){if(!e.assign[v.id]||livres.has(v.tipo)||v.tipo==='IN'||v.tipo==='VEU')continue;
+  if(!grupos.has(v.tipo))grupos.set(v.tipo,[]);grupos.get(v.tipo).push(v);
+ }
+ for(const [tipo,arr] of grupos){
+  arr.sort((a,b)=>Number(protegida(b))-Number(protegida(a))||minutes(a.inicio)-minutes(b.inicio));
+  const aceitas=[];
+  for(const v of arr){
+   const conflito=aceitas.find(o=>cruza(o,v));
+   if(!conflito){aceitas.push(v);continue;}
+   if(protegida(v)){alertas.push(tipo+' '+v.inicio+'–'+v.fim);continue;}
+   delete e.assign[v.id];removidas++;
+  }
+ }
+ return {removidas,alertas};
+}
+function reduzirRepeticoes(e,vagas){
+ const tiposFixos=['IN','APP','VEU','NN','ACI','PSIOFI','REC','RPR'];
+ const protegida=ch=>!!e.manuais?.[ch]||ch.startsWith('FIXA-')||ch.startsWith('PSIOFI-')||ch.startsWith('REC-')||Object.values(e.psiVeuLinks||{}).includes(ch);
+ const movel=v=>!!e.assign[v.id]&&!protegida(v.id)&&!tiposFixos.includes(v.tipo);
+ const presentes=db.pessoas.filter(p=>e.participantes[p.id]?.incluir&&!(p.fixa&&fixaAtiva(p,e)));
+ const elegivel=(p,v)=>{const s=e.participantes[p.id];return !!(s&&aptaSlot(p,v)&&minutes(s.inicio||'07:00')<=minutes(v.inicio)&&minutes(s.fim||'12:30')>=minutes(v.fim));};
+ const cruza=(a,b)=>minutes(a.inicio)<minutes(b.fim)&&minutes(b.inicio)<minutes(a.fim);
+ const emPe=t=>t==='POV'||t==='IN'||db.catalogo[t]?.esforco==='empe';
+ const conflitos=(id,v)=>vagas.filter(o=>o.id!==v.id&&e.assign[o.id]===id&&cruza(o,v));
+ const custo=()=>{
+  const porPessoa=new Map();
+  for(const v of vagas){const id=e.assign[v.id];if(!id)continue;if(!porPessoa.has(id))porPessoa.set(id,[]);porPessoa.get(id).push(v);}
+  let c=0;
+  for(const arr of porPessoa.values()){
+   const n={};
+   for(const v of arr){if(tiposFixos.includes(v.tipo)||v.id.startsWith('FIXA-'))continue;n[v.tipo]=(n[v.tipo]||0)+1;}
+   for(const [t,q] of Object.entries(n))if(q>1)c+=(q-1)*(t==='POV'?100:30)+(q>2?(q-2)*(t==='POV'?100:30):0);
+   // mesma tarefa próxima uma da outra, e atividades em pé encostadas
+   for(let i=0;i<arr.length;i++)for(let j=i+1;j<arr.length;j++){
+    const a=arr[i],b=arr[j];if(a.id.startsWith('FIXA-')||b.id.startsWith('FIXA-'))continue;
+    const d=Math.max(0,Math.max(minutes(a.inicio)-minutes(b.fim),minutes(b.inicio)-minutes(a.fim)));
+    if(a.tipo===b.tipo&&!tiposFixos.includes(a.tipo)&&d<=60)c+=(a.tipo==='POV'?40:10);
+    if(emPe(a.tipo)&&emPe(b.tipo)){if(d===0)c+=60;else if(d<=30)c+=20;else if(d<=60)c+=5;}
+   }
+  }
+  return c;
+ };
+ let trocas=0;
+ for(let rodada=0;rodada<80;rodada++){
+  let melhor=null,melhorCusto=custo();
+  for(const v of vagas){
+   if(!movel(v))continue;const A=pessoa(e.assign[v.id]);if(!A)continue;
+   for(const B of presentes){
+    if(B.id===A.id||!elegivel(B,v))continue;
+    const antes={...e.assign};
+    const cs=conflitos(B.id,v);
+    if(cs.every(o=>movel(o)&&elegivel(A,o))){
+     e.assign[v.id]=B.id;for(const o of cs)e.assign[o.id]=A.id;
+     if(!cs.some(o=>conflitos(A.id,o).length)&&!conflitos(B.id,v).length){
+      const novo=custo();if(novo<melhorCusto){melhorCusto=novo;melhor={...e.assign};}
+     }
+    }
+    e.assign=antes;
+   }
+  }
+  if(!melhor)break;e.assign=melhor;trocas++;
+ }
+ return trocas;
+}
 function autoPrioridades(silencioso=false){const e=escAtual();if(!e)return alert('Crie uma escala primeiro.');
 // Recalcular apenas designações automáticas para que SC possa substituir tarefas inferiores.
 e.manuais ||= {};
@@ -594,29 +911,33 @@ for(const [ch,id] of Object.entries(e.assign||{})){
  delete e.assign[ch];
 }
 sincronizarFixas(e);sincronizarRec(e);sincronizarSequenciasVeu(e);const protecao=protegerSequencias(e);const sobrepostasAntes=corrigirSobreposicoes(e);
-for(const c of (e.comuns||[]).filter(c=>c.automatico&&['ROB2','LAV','LANCHE','ASV','EST'].includes(c.tipo))){for(let j=0;j<c.qtd;j++)delete e.assign['COM-'+c.id+'-'+j];}
-e.comuns=(e.comuns||[]).filter(c=>!(c.automatico&&['ROB2','LAV','LANCHE','ASV','EST'].includes(c.tipo)));
+for(const c of (e.comuns||[]).filter(c=>c.automatico&&['AIN','ABA','TRM','ROB2','LAV','LANCHE','ASV','EST'].includes(c.tipo))){for(let j=0;j<c.qtd;j++)delete e.assign['COM-'+c.id+'-'+j];}
+e.comuns=(e.comuns||[]).filter(c=>!(c.automatico&&['AIN','ABA','TRM','ROB2','LAV','LANCHE','ASV','EST'].includes(c.tipo)));
 // Retirar frações antigas antes de montar as vagas; serão recalculadas nesta execução.
 for(const c of (e.comuns||[]).filter(c=>c.recFracionada)){for(let j=0;j<c.qtd;j++)delete e.assign[`COM-${c.id}-${j}`];}
 e.comuns=(e.comuns||[]).filter(c=>!c.recFracionada);
-const novosPeriodos=criarPeriodosObrigatorios(e);const vagas=[];for(const [tipo,periodos] of Object.entries(e.periodos)){if(tipo==='RPR')continue;periodos.forEach((r,i)=>{for(let j=0;j<(tipo==='VEU'?3:1);j++)vagas.push({id:`${tipo}-${i}-${j}`,tipo,i,ves:!!vesInicio(r[0],tipo),inicio:vesInicio(r[0],tipo)||r[0],fim:r.at(-1)})})}for(const c of e.comuns||[])for(let j=0;j<(c.tipo==='NN'?1:c.qtd);j++)vagas.push({id:`COM-${c.id}-${j}`,tipo:c.tipo,ves:!!vesInicio(c.inicio,c.tipo),inicio:vesInicio(c.inicio,c.tipo)||c.inicio,fim:c.fim});for(const p of db.pessoas){if(!p.fixa||!e.participantes[p.id]?.incluir||!fixaAtiva(p,e))continue;const sp=e.participantes[p.id],inicio=fmt(Math.max(minutes(sp.inicio||'07:00'),minutes(e.periodos.RPR[0][1]))),fim=sp.fim||'12:30';if(minutes(inicio)<minutes(fim)&&!vagas.some(v=>v.id.startsWith('FIXA-')&&v.tipo===p.fixa))vagas.push({id:'FIXA-'+p.id,tipo:p.fixa,inicio,fim})}vagas.sort((a,b)=>(a.tipo==='REC'?0:1)-(b.tipo==='REC'?0:1)||prioridadeNoHorario(a.tipo,a.inicio,a.fim)-prioridadeNoHorario(b.tipo,b.inicio,b.fim)||minutes(a.inicio)-minutes(b.inicio));let preenchidas=0;let recParcial=0;let recFracionadaExecutada=false;
+const novosPeriodos=criarPeriodosObrigatorios(e);const vagas=[];for(const [tipo,periodos] of Object.entries(e.periodos)){if(tipo==='RPR')continue;periodos.forEach((r,i)=>{for(let j=0;j<(tipo==='VEU'?3:1);j++)vagas.push({id:`${tipo}-${i}-${j}`,tipo,i,ves:!!vesInicio(r[0],tipo),inicio:vesInicio(r[0],tipo)||r[0],fim:r.at(-1)})})}for(const c of e.comuns||[])for(let j=0;j<(c.tipo==='NN'?1:c.qtd);j++)vagas.push({id:`COM-${c.id}-${j}`,tipo:c.tipo,ves:!!vesInicio(c.inicio,c.tipo),inicio:vesInicio(c.inicio,c.tipo)||c.inicio,fim:c.fim});for(const p of db.pessoas){if(!p.fixa||!e.participantes[p.id]?.incluir||!fixaAtiva(p,e))continue;const sp=e.participantes[p.id],inicio=fmt(Math.max(minutes(sp.inicio||'07:00'),minutes(e.periodos.RPR[0][1]))),fim=sp.fim||'12:30';if(minutes(inicio)<minutes(fim)&&!vagas.some(v=>v.id.startsWith('FIXA-')&&v.tipo===p.fixa))vagas.push({id:'FIXA-'+p.id,tipo:p.fixa,inicio,fim})}vagas.sort((a,b)=>ordemReconstrucaoIN(a)-ordemReconstrucaoIN(b)||prioridadeNoHorario(a.tipo,a.inicio,a.fim)-prioridadeNoHorario(b.tipo,b.inicio,b.fim)||minutes(a.inicio)-minutes(b.inicio));let preenchidas=0;let recParcial=0;let recFracionadaExecutada=false;
 let aciReservada=false;
 for(const v of vagas){
  if(!aciReservada&&prioridadeNoHorario(v.tipo,v.inicio,v.fim)>7){atribuirACIContinua(e,vagas);aciReservada=true;}
  // Concluir primeiro as prioridades 1 a 17; antes da 18, reservar REC por hora.
  if(!recFracionadaExecutada&&prioridadeNoHorario(v.tipo,v.inicio,v.fim)>17){recParcial=recFracionada(e,vagas);recFracionadaExecutada=true;}
-if(v.tipo==='APP'||e.assign[v.id]||(v.tipo==='REC'&&equipeReduzidaREC(e)&&!(e.participantes[recTitular(e,v.i)]?.incluir)&&!e.manuais?.[v.id]))continue;const candidatos=db.pessoas.filter(p=>{if(v.tipo==='NN'&&conflitoNNPSI(e,p.id,v.id))return false;if(v.tipo==='IN'&&violacoesIN(e,p.id,v.id))return false;if(v.tipo==='NN'&&e.nnModo==='mesma'){const ids=(e.comuns||[]).filter(c=>c.tipo==='NN').map(c=>e.assign['COM-'+c.id+'-0']).filter(Boolean);if(ids.length&&ids.some(id=>id!==p.id))return false;}const s=e.participantes[p.id];if(!s?.incluir||!aptaSlot(p,v)||minutes(s.inicio||'07:00')>minutes(v.inicio)||minutes(s.fim||'12:30')<minutes(v.fim))return false;if(p.fixa&&p.fixa!==v.tipo&&fixaAtiva(p,e))return false;if(minutes(v.inicio)<minutes(e.periodos.RPR[0][1]))return false;return !vagas.some(o=>o.id!==v.id&&e.assign[o.id]===p.id&&!o.id.startsWith('FIXA-')&&!v.id.startsWith('FIXA-')&&minutes(o.inicio)<minutes(v.fim)&&minutes(v.inicio)<minutes(o.fim))});candidatos.sort((a,b)=>(v.tipo==='NN'&&e.nnModo==='diferentes'?Number((e.comuns||[]).some(c=>c.tipo==='NN'&&e.assign[`COM-${c.id}-0`]===a.id))-Number((e.comuns||[]).some(c=>c.tipo==='NN'&&e.assign[`COM-${c.id}-0`]===b.id)):0)||(v.tipo==='IN'?Number(sequenciaIN(e,a.id,v.id))-Number(sequenciaIN(e,b.id,v.id)):0)||pontuacaoEquilibrio(e,vagas,a,v)-pontuacaoEquilibrio(e,vagas,b,v)||a.nome.localeCompare(b.nome,'pt-BR'));if(v.tipo==='IN'){
-  const abaixoDoLimite=candidatos.filter(p=>quantidadeIN(e,p.id)<2);
-  // Não ultrapassar duas IN com equipe normal. Equipe muito reduzida:
-  // só admitir a terceira quando não houver outra pessoa apta e disponível abaixo do limite.
-  if(abaixoDoLimite.length)candidatos.splice(0,candidatos.length,...abaixoDoLimite);
-  else if(!equipeMuitoReduzida(e))candidatos.length=0;
+if(v.tipo==='APP'||e.assign[v.id]||(v.tipo==='REC'&&equipeReduzidaREC(e)&&!(e.participantes[recTitular(e,v.i)]?.incluir)&&!e.manuais?.[v.id]))continue;const candidatos=db.pessoas.filter(p=>{if(v.tipo==='NN'&&conflitoNNPSI(e,p.id,v.id))return false;if(v.tipo==='VEU'&&veuStatus(p)==='treinamento'&&qtdVeuDe(e,p.id,v.id)>=1)return false;if(v.tipo==='IN'&&(violacoesIN(e,p.id,v.id)||!podeReceberIN(e,p.id,v.id,true)))return false;if(v.tipo==='NN'&&e.nnModo==='mesma'){const ids=(e.comuns||[]).filter(c=>c.tipo==='NN').map(c=>e.assign['COM-'+c.id+'-0']).filter(Boolean);if(ids.length&&ids.some(id=>id!==p.id))return false;}const s=e.participantes[p.id];if(!s?.incluir||!aptaSlot(p,v)||minutes(s.inicio||'07:00')>minutes(v.inicio)||minutes(s.fim||'12:30')<minutes(v.fim))return false;if(p.fixa&&p.fixa!==v.tipo&&fixaAtiva(p,e))return false;if(minutes(v.inicio)<minutes(e.periodos.RPR[0][1]))return false;return !vagas.some(o=>o.id!==v.id&&e.assign[o.id]===p.id&&!o.id.startsWith('FIXA-')&&!v.id.startsWith('FIXA-')&&minutes(o.inicio)<minutes(v.fim)&&minutes(v.inicio)<minutes(o.fim))});candidatos.sort((a,b)=>(v.tipo==='NN'&&e.nnModo==='diferentes'?Number((e.comuns||[]).some(c=>c.tipo==='NN'&&e.assign[`COM-${c.id}-0`]===a.id))-Number((e.comuns||[]).some(c=>c.tipo==='NN'&&e.assign[`COM-${c.id}-0`]===b.id)):0)||(v.tipo==='IN'?Number(sequenciaIN(e,a.id,v.id))-Number(sequenciaIN(e,b.id,v.id)):0)||pontuacaoEquilibrio(e,vagas,a,v)-pontuacaoEquilibrio(e,vagas,b,v)||a.nome.localeCompare(b.nome,'pt-BR'));if(v.tipo==='IN'){
+  // Limite individual: nunca ultrapassar 0, 1 ou 2 IN no automático.
+  // Ordem de preferência: [aceita 3ª IN?, distância mínima de outra IN/atividade em pé]. A 3ª IN só entra
+  // quando ninguém dentro do limite consegue ficar afastada; encostar IN é o último recurso.
+  const todosIN=candidatos.slice();let escolhidosIN=[];
+  for(const [extra,gap] of [[false,90],[false,60],[false,30],[true,60],[true,30],[false,0],[true,0]]){
+   escolhidosIN=todosIN.filter(p=>podeReceberIN(e,p.id,v.id,extra)&&distanciaMinimaEsforco(e,vagas,p.id,v)>=gap);
+   if(escolhidosIN.length)break;
+  }
+  candidatos.splice(0,candidatos.length,...escolhidosIN);
   candidatos.sort((a,b)=>quantidadeIN(e,a.id)-quantidadeIN(e,b.id)||pontuacaoEquilibrio(e,vagas,a,v)-pontuacaoEquilibrio(e,vagas,b,v));
  }
- if(candidatos.length){e.assign[v.id]=candidatos[0].id;preenchidas++}}if(!aciReservada)atribuirACIContinua(e,vagas);const inCorrigidas=corrigirINAutomatico(e);const inEquilibradas=equilibrarINGlobal(e,vagas);const protecaoFinal=protegerSequencias(e);const pendentes=vagas.filter(v=>!e.assign[v.id]&&!v.id.startsWith('FIXA-'));if(!recFracionadaExecutada)recParcial=recFracionada(e,vagas);const extras=distribuirApoiosELanches(e,vagas);const sobrepostasDepois=corrigirSobreposicoes(e);sincronizarSequenciasVeu(e);save();renderEscala();if(!silencioso)alert(novosPeriodos.length+' período(s) obrigatório(s) criado(s). REC fracionada: '+recParcial+' período(s). '+preenchidas+' vaga(s) prioritárias preenchida(s). IN redistribuídas: '+inEquilibradas+'. Apoios ROB2: '+extras.rob2+'; reforços LAV: '+extras.lav+'; lanches: '+extras.lanche+'; ASV: '+extras.asv+'; EST: '+extras.est+'. Vagas prioritárias ainda sem designação: '+pendentes.length+'. Sobreposições corrigidas: '+(sobrepostasAntes.length+sobrepostasDepois.length)+'. Sequências protegidas: '+(protecao.corrigidas+protecaoFinal.corrigidas)+' conflito(s) automático(s) removido(s); '+(protecao.manuais+protecaoFinal.manuais)+' conflito(s) manual(is) exigem revisão. Confira as designações e os alertas.')}
+ if(candidatos.length){e.assign[v.id]=candidatos[0].id;preenchidas++}}if(!aciReservada)atribuirACIContinua(e,vagas);const inCorrigidas=corrigirINAutomatico(e);const inEquilibradas=equilibrarINGlobal(e,vagas);const reparoIN=repararINComTrocas(e,vagas);const trocasConjuntas=otimizarINeVeu(e,vagas);const buscaIN=planejarINGlobal(e,vagas);const reparoRep=reduzirRepeticoes(e,vagas);const protecaoFinal=protegerSequencias(e);const pendentes=vagas.filter(v=>!e.assign[v.id]&&!v.id.startsWith('FIXA-'));if(!recFracionadaExecutada)recParcial=recFracionada(e,vagas);const extras=distribuirApoiosELanches(e,vagas);const sobrepostasDepois=corrigirSobreposicoes(e);sincronizarSequenciasVeu(e);const limites=limitarSimultaneidade(e,vagas);save();renderEscala();if(!silencioso)alert(novosPeriodos.length+' período(s) obrigatório(s) criado(s). REC fracionada: '+recParcial+' período(s). '+preenchidas+' vaga(s) prioritárias preenchida(s). IN redistribuídas: '+inEquilibradas+'. Apoios ROB2: '+extras.rob2+'; reforços LAV: '+extras.lav+'; lanches: '+extras.lanche+'; ASV: '+extras.asv+'; EST: '+extras.est+'. Vagas prioritárias ainda sem designação: '+pendentes.length+'. Sobreposições corrigidas: '+(sobrepostasAntes.length+sobrepostasDepois.length)+'. Sequências protegidas: '+(protecao.corrigidas+protecaoFinal.corrigidas)+' conflito(s) automático(s) removido(s); '+(protecao.manuais+protecaoFinal.manuais)+' conflito(s) manual(is) exigem revisão. Tarefas simultâneas excedentes removidas: '+limites.removidas+'. Conflitos protegidos a revisar: '+limites.alertas.length+'. Confira as designações e os alertas.')}
 function distribuirApoiosELanches(e,vagas){
  e.comuns ||= [];
- const criadas={rob2:0,lav:0,lanche:0,asv:0,est:0};
+ const criadas={ain:0,aba:0,trm:0,rob2:0,lav:0,lanche:0,asv:0,est:0};
  const presentes=db.pessoas.filter(p=>e.participantes[p.id]?.incluir&&!(p.fixa&&fixaAtiva(p,e)));
  const ocupado=(p,a,b)=>vagas.some(v=>e.assign[v.id]===p.id&&minutes(v.inicio)<b&&a<minutes(v.fim));
  const livre=(p,a,b)=>{const s=e.participantes[p.id];return minutes(s.inicio||'07:00')<=a&&minutes(s.fim||'12:30')>=b&&!ocupado(p,a,b)};
@@ -636,21 +957,52 @@ function distribuirApoiosELanches(e,vagas){
   for(const p of presentes){if(!livre(p,a,b))continue;
    const historico=vagas.filter(v=>e.assign[v.id]===p.id&&minutes(v.fim)<=a).sort((x,y)=>minutes(y.fim)-minutes(x.fim));
    const anterior=historico[0]?.tipo||'';
-   const ordem=['ASV','LAV','ROB2','EST'];
+   // AIN é apoio opcional: no máximo uma oficiante por faixa de 30 minutos.
+   // ASV tem prioridade quando ainda não existe cobertura no período.
+   const cobertura=tipo=>vagas.filter(v=>v.tipo===tipo&&e.assign[v.id]&&minutes(v.inicio)<b&&a<minutes(v.fim)).length;
+   const ordem=cobertura('ASV')===0?['ASV','ABA','TRM','ROB2','LAV','AIN','EST']:['ABA','TRM','ROB2','LAV','ASV','AIN','EST'];
    let escolhido='';
    for(const tipo of ordem){if(tipo!=='EST'&&!apta(p,tipo))continue;
+    if(tipo==='AIN'&&cobertura('AIN')>=1)continue;
+    if(!['ROB2','LAV','TRM','LANCHE'].includes(tipo)&&cobertura(tipo)>=1)continue;
     if(tipo==='ASV'&&historico.some(v=>v.tipo==='ASV'))continue;
+    if(tipo==='AIN'){
+     // Permitir AIN de 30 ou 60 minutos, mas somente em um bloco por oficiante.
+     const blocosAIN=vagas.filter(v=>v.tipo==='AIN'&&e.assign[v.id]===p.id).sort((x,y)=>minutes(x.inicio)-minutes(y.inicio));
+     if(blocosAIN.length>=2)continue;
+     if(blocosAIN.length===1&&minutes(blocosAIN[0].fim)!==a)continue;
+    }
+    if(['ABA','TRM'].includes(tipo)&&historico.filter(v=>v.tipo===tipo).length>=2)continue;
     if(tipo==='LAV'||tipo==='ROB2'){
       const emAtividade=vagas.filter(v=>v.tipo===tipo&&minutes(v.inicio)<b&&a<minutes(v.fim)).length;
       if(emAtividade>=2)continue;
     }
-    if(tipo===anterior&&tipo!=='EST')continue;
+    if(tipo===anterior&&tipo!=='EST'&&tipo!=='AIN')continue;
     const atual=db.catalogo[tipo]?.esforco||'alternada';
     if(db.catalogo[anterior]?.esforco==='empe'&&atual==='empe')continue;
     escolhido=tipo;break;
    }
    if(!escolhido)escolhido='EST';
    add(escolhido,p,a);
+  }
+ }
+ // Unir dois períodos automáticos contíguos da mesma tarefa e oficiante em 1 hora.
+ // LANCHE nunca é unido: permanece sempre com 30 minutos.
+ const flexiveis=new Set(['AIN','ABA','TRM','LAV','ROB2','ASV']);
+ for(const p of presentes){
+  for(const tipo of flexiveis){
+   const blocos=e.comuns.filter(c=>c.automatico&&c.tipo===tipo&&e.assign['COM-'+c.id+'-0']===p.id)
+    .sort((a,b)=>minutes(a.inicio)-minutes(b.inicio));
+   for(let i=0;i<blocos.length-1;i++){
+    const a=blocos[i],b=blocos[i+1];
+    if(minutes(a.fim)!==minutes(b.inicio)||minutes(a.fim)-minutes(a.inicio)!==30||minutes(b.fim)-minutes(b.inicio)!==30)continue;
+    a.fim=b.fim;
+    const vaga=vagas.find(v=>v.id==='COM-'+a.id+'-0');if(vaga)vaga.fim=b.fim;
+    e.comuns=e.comuns.filter(c=>c.id!==b.id);
+    vagas.splice(vagas.findIndex(v=>v.id==='COM-'+b.id+'-0'),1);
+    delete e.assign['COM-'+b.id+'-0'];
+    blocos.splice(i+1,1);
+   }
   }
  }
  return criadas;
@@ -713,7 +1065,7 @@ if(id&&!slot.startsWith('FIXA-')){
   if(conflito){alert('Conflito: esta oficiante já está designada no mesmo horário ('+conflito[0]+'). Escolha outra oficiante.');renderEscala();return;}
  }
 }
-if(id&&tipoDaVaga(e,slot)==='IN'&&violacoesIN(e,id,slot)){alert('IN: limite absoluto de 2 horas consecutivas. Prefira alternar as oficiantes a cada período de 1 hora.');renderEscala();return;}if(slot.startsWith('VEU-')&&Object.values(e.psiVeuLinks||{}).includes(slot)){alert('Esta vaga do VÉU está vinculada à sequência PSI → OFI. Altere a oficiante na escolha manual de PSI → OFI.');renderEscala();return;}if(id&&slot.startsWith('VEU-')){const periodo=Number(slot.split('-')[1]);const p=pessoa(id);if(p&&!podeVeu(p,periodo)){alert('Esta oficiante não está habilitada para este período do VÉU. Em treinamento: somente 2º e 4º VÉU.');renderEscala();return;}}e.assign[slot]=id;if(slot.startsWith('REC-')){e.recManuais ||= {};e.recManuais[slot]=true;}e.manuais ||= {};e.manuais[slot]=!!id;save();renderEscala()}$('comumTipo').onchange=atualizarDuracaoComum;$('dataEscala').onchange=renderEscala;$('quinto').onchange=()=>{const e=escAtual();if(e){e.quinto=$('quinto').value;sincronizarFixas(e);save();renderEscala()}};
+if(id&&tipoDaVaga(e,slot)==='IN'&&!podeReceberIN(e,id,slot)){alert('Esta oficiante tem limite de '+limiteIN(pessoa(id))+' IN por turno. Altere o limite no cadastro somente se for seguro.');renderEscala();return;}if(id&&tipoDaVaga(e,slot)==='IN'&&violacoesIN(e,id,slot)){alert('IN: limite absoluto de 2 horas consecutivas. Prefira alternar as oficiantes a cada período de 1 hora.');renderEscala();return;}if(slot.startsWith('VEU-')&&Object.values(e.psiVeuLinks||{}).includes(slot)){alert('Esta vaga do VÉU está vinculada à sequência PSI → OFI. Altere a oficiante na escolha manual de PSI → OFI.');renderEscala();return;}if(id&&slot.startsWith('VEU-')){const periodo=Number(slot.split('-')[1]);const p=pessoa(id);if(p&&!podeVeu(p,periodo)){alert('Esta oficiante não está habilitada para este período do VÉU. Em treinamento: somente 2º e 4º VÉU.');renderEscala();return;}if(p&&veuStatus(p)==='treinamento'&&qtdVeuDe(e,id,slot)>=1){alert('Oficiante em treinamento no VÉU: somente uma vez por turno.');renderEscala();return;}}e.assign[slot]=id;if(slot.startsWith('REC-')){e.recManuais ||= {};e.recManuais[slot]=true;}e.manuais ||= {};e.manuais[slot]=!!id;save();renderEscala()}$('comumTipo').onchange=atualizarDuracaoComum;$('dataEscala').onchange=renderEscala;$('quinto').onchange=()=>{const e=escAtual();if(e){e.quinto=$('quinto').value;sincronizarFixas(e);save();renderEscala()}};
 function renderPresenca(){const d=$('dataPresenca').value,e=db.escalas[d];$('listaPresenca').innerHTML=!e?'<p class="muted">Não há escala cadastrada para essa data.</p>':'<div class="scroll"><table><tr><th>Oficiante</th><th>Obrigação</th><th>Presença efetiva</th><th>Observação</th></tr>'+db.pessoas.map(p=>{const s=e.participantes[p.id];if(!s)return '';return `<tr><td>${esc(p.nome)}</td><td>${obrigatoria(p,d,e.quinto)?'Prevista':'Não fixa'}</td><td><select onchange="setReal('${d}','${p.id}',this.value)">${selectOptions([['','Não verificada'],['presente','Presente'],['ausente','Ausente'],['justificada','Ausência justificada'],['substituida','Ausência coberta por substituição'],['nao_escalada','Não escalada / sem obrigação']],s.real||'')}</select></td><td><input value="${esc(s.nota||'')}" onchange="setNota('${d}','${p.id}',this.value)" placeholder="Ex.: chegou 8h"></td></tr>`}).join('')+'</table></div>'}function setReal(d,id,v){db.escalas[d].participantes[id].real=v;save()}function setNota(d,id,v){db.escalas[d].participantes[id].nota=v;save()}function renderRelatorio(){const mes=$('mesRel').value;if(!mes)return;const datas=Object.keys(db.escalas).filter(d=>d.startsWith(mes)).sort();$('relatorio').innerHTML='<p>'+datas.length+' sábado(s) registrados.</p>'+datas.map(d=>{const e=db.escalas[d],reg=Object.values(e.participantes),counts={};for(const s of reg)counts[s.real||'não verificada']=(counts[s.real||'não verificada']||0)+1;return `<p><b>${d.split('-').reverse().join('/')}</b> — ${Object.entries(counts).map(([k,v])=>`${esc(k)}: ${v}`).join(' · ')}</p>`}).join('')}
 function backup(){const b=new Blob([JSON.stringify(db,null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='backup_oficiantes_templo_rj_'+new Date().toISOString().slice(0,10)+'.json';a.click();URL.revokeObjectURL(a.href)}$('restaurar').onchange=async e=>{const f=e.target.files[0];if(!f)return;try{const obj=JSON.parse(await f.text());if(!Array.isArray(obj.pessoas)||typeof obj.escalas!=='object'||typeof obj.configs!=='object')throw Error('Estrutura inválida');if(!confirm('Substituir todos os dados atuais pelos dados deste backup?'))return;db=obj;save();renderInicio();alert('Backup restaurado.')}catch(err){alert('Não foi possível restaurar: '+err.message)}};
 
@@ -909,7 +1261,7 @@ function gerarPDFCronograma(){
  const avisosVeu=sincronizarSequenciasVeu(ePreparar);if(avisosVeu.length){save();renderEscala();return alert('Não foi possível completar PSI → OFI → VÉU:\n'+avisosVeu.join('\n'));}
  const eFinal=escAtual();
  const restantes=corrigirSobreposicoes(eFinal);corrigirINAutomatico(eFinal);
- const errosIN=db.pessoas.filter(p=>violacoesIN(eFinal,p.id));if(errosIN.length){save();renderEscala();return alert('Não foi possível gerar PDF: IN ultrapassa o limite absoluto de 2 horas consecutivas para: '+errosIN.map(p=>p.nome).join(', ')+'. Corrija as designações manuais.');}
+ const errosLimite=db.pessoas.filter(p=>quantidadeIN(eFinal,p.id)>limiteINEfetivo(p));if(errosLimite.length){save();renderEscala();return alert('Não foi possível gerar PDF: limite individual de IN excedido para '+errosLimite.map(p=>p.nome).join(', ')+'. Revise as designações protegidas.');}const errosIN=db.pessoas.filter(p=>violacoesIN(eFinal,p.id));if(errosIN.length){save();renderEscala();return alert('Não foi possível gerar PDF: IN ultrapassa o limite absoluto de 2 horas consecutivas para: '+errosIN.map(p=>p.nome).join(', ')+'. Corrija as designações manuais.');}
  if(restantes.length){save();autoPrioridades(true);}
  save();
 
